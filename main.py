@@ -8,7 +8,7 @@ import json
 from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from aiogram.utils.web_app import safe_parse_webapp_init_data
-from serializers import Order, BaseSerializer
+from serializers import Order
 import logging
 
 
