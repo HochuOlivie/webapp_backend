@@ -35,9 +35,9 @@ app.add_middleware(
 @dp.message_handler(commands="start")
 async def on_startup(msg):
     await bot.send_message(msg.from_user.id, 'Сделайте заказ',
-                           reply_markup=ReplyKeyboardMarkup()
+                           reply_markup=InlineKeyboardMarkup()
                            .add(
-                               KeyboardButton(text="Открыть карту",
+                               InlineKeyboardMarkup(text="Открыть карту",
                                               web_app=WebAppInfo(url=url)
                                               )
                                )
