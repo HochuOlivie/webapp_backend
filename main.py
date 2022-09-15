@@ -5,14 +5,14 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types.web_app_info import WebAppInfo
 from aiogram import types
 import json
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from aiogram.utils.web_app import safe_parse_webapp_init_data
 from serializers import Order, BaseSerializer
 import logging
 
 
-logging.basicConfig(filename='logs.txt', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
 
 app = FastAPI()
 
@@ -44,20 +44,19 @@ async def on_startup(msg):
                            )
 
 
-async def get_init_data(base: BaseSerializer):
-    logging.debug(base.auth)
-    if base.auth is None:
+async def get_init_data(auth: str = Header()):
+    logging.debug(auth)
+    if auth is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     try:
-        data = safe_parse_webapp_init_data(token=API_TOKEN, init_data=base.auth, _loads=json.loads)
+        data = safe_parse_webapp_init_data(token=API_TOKEN, init_data=auth, _loads=json.loads)
     except ValueError:
         raise HTTPException(status_code=400, detail="Not authorized")
-    return base, data
+    return data
 
 
 @app.post("/order")
-async def read_root(data=Depends(get_init_data)):
-    order, web_init_data = data
+async def read_root(order: Order, web_init_data=Depends(get_init_data)):
     await bot.send_message(web_init_data['user']['id'],
                            f'Ваш заказ из <b>{order.place}</b> по адресу <b>{order.address}</b> вскоре будет доставлен',
                            parse_mode='HTML')
