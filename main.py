@@ -13,7 +13,7 @@ from serializers import Order, BaseSerializer
 app = FastAPI()
 
 API_TOKEN = '5540532207:AAEB8PbJymDWQEUPJ4ZMIXkOg7K0kOHU1fc'
-
+url = 'https://timely-griffin-7f7331.netlify.app'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
@@ -34,13 +34,14 @@ async def on_startup(msg):
                            reply_markup=ReplyKeyboardMarkup()
                            .add(
                                KeyboardButton(text="Открыть карту",
-                                              web_app=WebAppInfo(url=f"https://frolicking-treacle-60b728.netlify.app")
+                                              web_app=WebAppInfo(url=url)
                                               )
                                )
                            )
 
 
 async def get_init_data(base: BaseSerializer):
+    print(base.auth)
     if base.auth is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     try:
