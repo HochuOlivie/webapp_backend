@@ -17,7 +17,7 @@ logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
 app = FastAPI()
 
 API_TOKEN = '5540532207:AAEB8PbJymDWQEUPJ4ZMIXkOg7K0kOHU1fc'
-url = 'https://friendly-cocada-99027b.netlify.app'
+url = 'https://singular-pixie-8d4d27.netlify.app'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
