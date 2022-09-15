@@ -9,6 +9,10 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from aiogram.utils.web_app import safe_parse_webapp_init_data
 from serializers import Order, BaseSerializer
+import logging
+
+
+logging.basicConfig(filename='logs.txt', encoding='utf-8', level=logging.DEBUG)
 
 app = FastAPI()
 
@@ -41,7 +45,7 @@ async def on_startup(msg):
 
 
 async def get_init_data(base: BaseSerializer):
-    print(base.auth)
+    logging.debug(base.auth)
     if base.auth is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     try:
