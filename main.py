@@ -17,7 +17,7 @@ logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
 app = FastAPI()
 
 API_TOKEN = '5540532207:AAEB8PbJymDWQEUPJ4ZMIXkOg7K0kOHU1fc'
-url = 'https://timely-griffin-7f7331.netlify.app'
+url = 'https://deluxe-mooncake-c2981a.netlify.app'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
