@@ -17,7 +17,7 @@ logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
 app = FastAPI()
 
 API_TOKEN = '5540532207:AAEB8PbJymDWQEUPJ4ZMIXkOg7K0kOHU1fc'
-url = 'https://singular-pixie-8d4d27.netlify.app'
+url = 'https://thunderous-seahorse-bab4b8.netlify.app'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
