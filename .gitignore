@@ -1,2 +1,6 @@
-.idea
+**/.idea
 certificates
+db.sqlite3
+**/migrations
+logs.txt
+.DS_Store
