@@ -1,25 +1,28 @@
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.types.web_app_info import WebAppInfo
-from aiogram import types
 import json
 from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from aiogram.utils.web_app import safe_parse_webapp_init_data
 from serializers import Order
 import logging
+import os
+from telegram.bot import DeliveryBot
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 
-logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+
+# logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
 
 app = FastAPI()
 
 API_TOKEN = '5506739202:AAGoHlJNa5CLoDqYyPsdUzikdSZnevSdHoA'
 url = 'https://thunderous-seahorse-bab4b8.netlify.app'
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+storage = MemoryStorage()
+dp = Dispatcher(bot, storage=storage)
+my_bot = DeliveryBot(bot, dp)
 
 origins = ["*"]
 
@@ -32,16 +35,16 @@ app.add_middleware(
 )
 
 
-@dp.message_handler(commands="start")
-async def on_startup(msg):
-    await bot.send_message(msg.from_user.id, 'Сделайте заказ',
-                           reply_markup=InlineKeyboardMarkup()
-                           .add(
-                               InlineKeyboardMarkup(text="Открыть карту",
-                                              web_app=WebAppInfo(url=url)
-                                              )
-                               )
-                           )
+# @dp.message_handler(commands="start")
+# async def on_startup(msg):
+#     await bot.send_message(msg.from_user.id, 'Сделайте заказ',
+#                            reply_markup=InlineKeyboardMarkup()
+#                            .add(
+#                                InlineKeyboardMarkup(text="Открыть карту",
+#                                               web_app=WebAppInfo(url=url)
+#                                               )
+#                                )
+#                            )
 
 
 async def get_init_data(auth: str = Header()):
@@ -65,4 +68,6 @@ async def read_root(order: Order, web_init_data=Depends(get_init_data)):
 
 @app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(dp.start_polling(limit=0))
+    asyncio.create_task(my_bot.start())
+    # ...
+# executor.start_polling(dp, skip_updates=True)

@@ -3,3 +3,4 @@ fastapi==0.82.0
 pydantic==1.10.2
 
 Django~=4.1.1
+decorator~=5.1.1
