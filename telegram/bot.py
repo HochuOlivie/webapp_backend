@@ -17,5 +17,6 @@ class DeliveryBot:
             b.register_handlers()
 
     async def start(self):
-        await self.dp.skip_updates()
-        await self.dp.start_polling()
+        if not self.dp.is_polling():
+            await self.dp.skip_updates()
+            await self.dp.start_polling()
