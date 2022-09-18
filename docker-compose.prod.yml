@@ -33,7 +33,7 @@ services:
   react:
     container_name: react
     build:
-      context: front
+      context: .
       dockerfile: Dockerfile.react
     volumes:
       - './front:/app'
