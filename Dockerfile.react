@@ -3,5 +3,5 @@ WORKDIR /app
 COPY front/package.json .
 RUN npm install
 COPY front .
-EXPOSE 3000
-CMD ["npm", "start"]
+RUN npm run build
+serve -s build -l 3000
