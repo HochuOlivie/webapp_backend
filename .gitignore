@@ -5,3 +5,6 @@ db.sqlite3
 logs.txt
 .DS_Store
 **/__pycache__
+**/build
+**/node_modules
+**/traefik-public-certificates
