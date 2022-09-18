@@ -44,9 +44,9 @@ services:
       - CHOKIDAR_USEPOLLING=true
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`1032649-cu51513.tmweb.ru/`)"
-      - "traefik.http.routers.fastapi.tls=true"
-      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.react.rule=Host(`1032649-cu51513.tmweb.ru/`)"
+      - "traefik.http.routers.react.tls=true"
+      - "traefik.http.routers.react.tls.certresolver=letsencrypt"
   traefik:
     build:
       context: .
