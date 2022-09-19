@@ -66,8 +66,3 @@ services:
 volumes:
   postgres_data_prod:
   traefik-public-certificates:
-
-networks:
-  default:
-    external:
-      name: traefik
