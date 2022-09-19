@@ -30,20 +30,20 @@ services:
 #      - POSTGRES_USER=fastapi_traefik_prod
 #      - POSTGRES_PASSWORD=fastapi_traefik_prod
 #      - POSTGRES_DB=fastapi_traefik_prod
-#  react:
-#    container_name: react
-#    build:
-#      context: .
-#      dockerfile: Dockerfile.react
-#    ports: [3000]
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.react.rule=Host(`web.1032649-cu51513.tmweb.ru`)"
-#      - "traefik.http.routers.react.tls=true"
-#      - "traefik.http.routers.react.entrypoints=websecure"
-#      - "traefik.http.routers.react.tls.certresolver=letsencrypt"
-#      - "traefik.http.routers.react.tls.domains[0].main=web.1032649-cu51513.tmweb.ru/"
-#      - "traefik.http.routers.react.tls.domains[0].sans=www.web.1032649-cu51513.tmweb.ru/"
+  react:
+    container_name: react
+    build:
+      context: .
+      dockerfile: Dockerfile.react
+    ports: [3000]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.react.rule=Host(`web.1032649-cu51513.tmweb.ru`)"
+      - "traefik.http.routers.react.tls=true"
+      - "traefik.http.routers.react.entrypoints=websecure"
+      - "traefik.http.routers.react.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.react.tls.domains[0].main=web.1032649-cu51513.tmweb.ru/"
+      - "traefik.http.routers.react.tls.domains[0].sans=www.web.1032649-cu51513.tmweb.ru/"
   traefik:
     build:
       context: .
