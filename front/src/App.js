@@ -10,8 +10,9 @@ function App() {
   return (
       // <Routes
       <Routes>
+        <Route path="/" element={<Button variant="text">Text</Button>} />
         <Route path="/partner" element={<Mmap />} />
-        <Route path="/customer" element={<Button variant="text">Text</Button>} />s
+        <Route path="/customer" element={<Button variant="text">Text</Button>} />
       </Routes>
 
   );
