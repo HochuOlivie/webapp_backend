@@ -38,7 +38,7 @@ services:
     ports: [3000]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.react.rule=Host(`web.1032649-cu51513.tmweb.ru/`)"
+      - "traefik.http.routers.react.rule=Host(`web.1032649-cu51513.tmweb.ru`)"
       - "traefik.http.routers.react.tls=true"
       - "traefik.http.routers.react.entrypoints=websecure"
       - "traefik.http.routers.react.tls.certresolver=letsencrypt"
@@ -56,7 +56,7 @@ services:
       - "./traefik-public-certificates:/certificates"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.1032649-cu51513.tmweb.ru/`)"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.1032649-cu51513.tmweb.ru`)"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"
