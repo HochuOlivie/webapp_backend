@@ -42,8 +42,8 @@ services:
       - "traefik.http.routers.react.tls=true"
       - "traefik.http.routers.react.entrypoints=websecure"
       - "traefik.http.routers.react.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.react.tls.domains[0].main=web.1032649-cu51513.tmweb.ru/"
-      - "traefik.http.routers.react.tls.domains[0].sans=www.web.1032649-cu51513.tmweb.ru/"
+#      - "traefik.http.routers.react.tls.domains[0].main=web.1032649-cu51513.tmweb.ru/"
+#      - "traefik.http.routers.react.tls.domains[0].sans=www.web.1032649-cu51513.tmweb.ru/"
   traefik:
     build:
       context: .
