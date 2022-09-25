@@ -13,8 +13,6 @@ const MyMap = (props) => {
     // back button
     const navigate = useRef(useNavigate());
 
-    //ensure one time call
-    const oneTime = useRef(false)
     // ymaps
     const [map, setMap] = useState(null);
     const [ymaps, setYmaps] = useState(null);
@@ -43,26 +41,23 @@ const MyMap = (props) => {
 
     let [drawerHours, setDrawerHours] = useState('')
 
+    const mainButtonCallback = () => {
+        axios.post('https://api.1032649-cu51513.tmweb.ru/order', {
+            place: `${drawerTextRef.current}`,
+            address: `${drawerSecondaryTextRef.current}`,
+        }).then((res) => tg.current.close()).catch((e) => tg.current.close())
+    }
+
     useEffect(() => {
-        if (oneTime.current) {
-            tg.current.MainButton.hide()
-            tg.current.BackButton.show()
-            mainRef.current.scrollIntoView()
-            return
-        }
-        oneTime.current = true
         tg.current.ready()
         axios.defaults.headers.common['auth'] = tg.current.initData
         tg.current.MainButton.hide()
         tg.current.MainButton.text = 'Заказать здесь'
-        tg.current.onEvent('mainButtonClicked', () => {
-            axios.post('https://api.1032649-cu51513.tmweb.ru/order', {
-                place: `${drawerTextRef.current}`,
-                address: `${drawerSecondaryTextRef.current}`,
-            }).then((res) => tg.current.close()).catch((e) => tg.current.close())
-        })
-        tg.current.BackButton.onClick(() => navigate.current(-1))
+        tg.current.offEvent('mainButtonClicked', mainButtonCallback)
+        tg.current.onEvent('mainButtonClicked', mainButtonCallback)
         tg.current.BackButton.show()
+        tg.current.BackButton.offClick(() => navigate.current(-1))
+        tg.current.BackButton.onClick(() => navigate.current(-1))
         mainRef.current.scrollIntoView()
     }, [])
 
