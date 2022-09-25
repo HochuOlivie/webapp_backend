@@ -49,13 +49,11 @@ const MyMap = (props) => {
                 address: `${drawerSecondaryTextRef.current}`,
             }).then((res) => tg.current.close()).catch((e) => tg.current.close())
         })
-    }, [])
-
-    useEffect(() => {
-        tg.BackButton.show()
-        tg.BackButton.onClick(() => navigate(-1))
+        tg.current.BackButton.show()
+        tg.current.BackButton.onClick(() => navigate(-1))
         mainRef.current.scrollIntoView()
     }, [navigate])
+
 
     useEffect(() => {
 

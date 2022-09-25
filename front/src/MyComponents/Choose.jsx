@@ -12,7 +12,7 @@ const Choose = (props) => {
     const [checked, setChecked] = useState(true);
     const tg = useRef(window.Telegram.WebApp)
     useEffect(() => {
-        tg.BackButton.hide()
+        tg.current.BackButton.hide()
     })
     return (
         <ThemeProvider theme={theme}>
