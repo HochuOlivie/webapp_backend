@@ -9,7 +9,8 @@ import {useNavigate} from "react-router-dom";
 const MyMap = (props) => {
     // tg web app
     const tg = useRef(window.Telegram.WebApp)
-    const navigate = useNavigate();
+    const navigate = useRef(useNavigate());
+
     // ymaps
     const [map, setMap] = useState(null);
     const [ymaps, setYmaps] = useState(null);
@@ -50,9 +51,9 @@ const MyMap = (props) => {
             }).then((res) => tg.current.close()).catch((e) => tg.current.close())
         })
         tg.current.BackButton.show()
-        tg.current.BackButton.onClick(() => navigate(-1))
+        tg.current.BackButton.onClick(() => navigate.current(-1))
         mainRef.current.scrollIntoView()
-    }, [navigate])
+    }, [])
 
 
     useEffect(() => {
