@@ -3,13 +3,13 @@ import {YMaps, Map, ObjectManager} from "react-yandex-maps";
 import Search from "./Search";
 import SwipeableEdgeDrawer from "./SwipeableEdgeDrawer";
 import axios from "axios";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 
 const MyMap = (props) => {
     // tg web app
     const tg = useRef(window.Telegram.WebApp)
-    let history = useHistory();
+    const navigate = useNavigate();
     // ymaps
     const [map, setMap] = useState(null);
     const [ymaps, setYmaps] = useState(null);
@@ -49,11 +49,13 @@ const MyMap = (props) => {
                 address: `${drawerSecondaryTextRef.current}`,
             }).then((res) => tg.current.close()).catch((e) => tg.current.close())
         })
-        tg.BackButton.show()
-        tg.BackButton.onClick(() => history.goBack())
-        mainRef.current.scrollIntoView()
+    }, [])
 
-    }, [history])
+    useEffect(() => {
+        tg.BackButton.show()
+        tg.BackButton.onClick(() => navigate(-1))
+        mainRef.current.scrollIntoView()
+    }, [navigate])
 
     useEffect(() => {
 
