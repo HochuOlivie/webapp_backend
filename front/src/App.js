@@ -1,8 +1,9 @@
-import './App.css';
-import Mmap from "./Components/MyMap";
+import Mmap from "./MyComponents/MyMap";
 import { Routes, Route, Link } from "react-router-dom";
-import {Button} from "@mui/material";
-
+import {Button, CssBaseline} from "@mui/material";
+import Choose from "./MyComponents/Choose";
+import theme from "assets/theme";
+import {ThemeProvider} from "@emotion/react";
 
 
 function App() {
@@ -10,11 +11,10 @@ function App() {
   return (
       // <Routes
       <Routes>
-        <Route path="/" element={<Button variant="text">Text</Button>} />
+        <Route path="/" element={<Choose/>} />
         <Route path="/partner" element={<Mmap />} />
-        <Route path="/customer" element={<Button variant="text">Text</Button>} />
+        <Route path="/customer" element={<Mmap />} />
       </Routes>
-
   );
 }
 
