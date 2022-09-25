@@ -2,7 +2,7 @@ FROM node:17-alpine
 WORKDIR .
 ENV NODE_OPTIONS "--openssl-legacy-provider"
 COPY front/package.json .
-RUN npm install --force
+RUN npm install
 COPY front .
 RUN npm run build
 RUN npm install -g serve
