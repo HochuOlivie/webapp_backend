@@ -44,7 +44,12 @@ const MyMap = (props) => {
     let [drawerHours, setDrawerHours] = useState('')
 
     useEffect(() => {
-        if (oneTime) return
+        if (oneTime.current) {
+            tg.current.MainButton.hide()
+            tg.current.BackButton.show()
+            mainRef.current.scrollIntoView()
+            return
+        }
         oneTime.current = true
         tg.current.ready()
         axios.defaults.headers.common['auth'] = tg.current.initData
@@ -56,8 +61,8 @@ const MyMap = (props) => {
                 address: `${drawerSecondaryTextRef.current}`,
             }).then((res) => tg.current.close()).catch((e) => tg.current.close())
         })
-        tg.current.BackButton.show()
         tg.current.BackButton.onClick(() => navigate.current(-1))
+        tg.current.BackButton.show()
         mainRef.current.scrollIntoView()
     }, [])
 
