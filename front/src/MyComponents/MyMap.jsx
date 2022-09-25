@@ -47,18 +47,21 @@ const MyMap = (props) => {
             address: `${drawerSecondaryTextRef.current}`,
         }).then((res) => tg.current.close()).catch((e) => tg.current.close())
     }
+    const backButtonClick = () => navigate.current(-1)
 
     useEffect(() => {
         tg.current.ready()
         axios.defaults.headers.common['auth'] = tg.current.initData
         tg.current.MainButton.hide()
         tg.current.MainButton.text = 'Заказать здесь'
-        tg.current.offEvent('mainButtonClicked', mainButtonCallback)
         tg.current.onEvent('mainButtonClicked', mainButtonCallback)
         tg.current.BackButton.show()
-        tg.current.BackButton.offClick(() => navigate.current(-1))
-        tg.current.BackButton.onClick(() => navigate.current(-1))
+        tg.current.BackButton.onClick(() => backButtonClick)
         mainRef.current.scrollIntoView()
+        return () => {
+            tg.current.BackButton.offClick(() => backButtonClick)
+            tg.current.offEvent('mainButtonClicked', mainButtonCallback)
+        }
     }, [])
 
 
