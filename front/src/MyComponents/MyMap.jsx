@@ -13,7 +13,7 @@ const MyMap = (props) => {
     const [map, setMap] = useState(null);
     const [ymaps, setYmaps] = useState(null);
     const [objectManager, setObjectManager] = useState(null);
-
+    const mainRef = useRef(null)
     // Current placemarks on map
     let [currentFeatures, setCurrentFeatures] = useState({})
     let featureId = useRef(-1)
@@ -48,6 +48,8 @@ const MyMap = (props) => {
                 address: `${drawerSecondaryTextRef.current}`,
             }).then((res) => tg.current.close()).catch((e) => tg.current.close())
         })
+        mainRef.current.scrollIntoView()
+
     }, [])
 
     useEffect(() => {
@@ -95,7 +97,7 @@ const MyMap = (props) => {
     }, [map, objectManager])
 
     return (
-        <div style={{height: '100%', width: '100%'}}>
+        <div ref={mainRef} style={{height: '100%', width: '100%'}}>
             <YMaps query={{ load: ['ObjectManager', 'Placemark'] }}>
                 <Map defaultState={{
                     center: [54.965021, 82.937751],
