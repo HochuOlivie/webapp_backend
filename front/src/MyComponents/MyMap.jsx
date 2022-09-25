@@ -61,6 +61,7 @@ const MyMap = (props) => {
         return () => {
             tg.current.BackButton.offClick(backButtonClick)
             tg.current.offEvent('mainButtonClicked', mainButtonCallback)
+            tg.current.MainButton.hide()
         }
     }, [])
 
