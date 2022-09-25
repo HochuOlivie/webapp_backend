@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram import Bot, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, WebAppInfo
 
-from main import url
+from initialize import url
 from . import keyboards
 from . import callback_consts as cbc
 from aiogram.dispatcher import FSMContext

@@ -17,8 +17,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 app = FastAPI()
 
-API_TOKEN = '5506739202:AAGoHlJNa5CLoDqYyPsdUzikdSZnevSdHoA'
-url = 'https://web.1032649-cu51513.tmweb.ru/'
+API_TOKEN = '5506739202:AAEj9v8SPTb_faW9kJKsJGudTQlt51EUfX0'
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
