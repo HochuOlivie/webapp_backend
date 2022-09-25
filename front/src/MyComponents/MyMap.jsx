@@ -9,8 +9,12 @@ import {useNavigate} from "react-router-dom";
 const MyMap = (props) => {
     // tg web app
     const tg = useRef(window.Telegram.WebApp)
+
+    // back button
     const navigate = useRef(useNavigate());
 
+    //ensure one time call
+    const oneTime = useRef(false)
     // ymaps
     const [map, setMap] = useState(null);
     const [ymaps, setYmaps] = useState(null);
@@ -40,6 +44,8 @@ const MyMap = (props) => {
     let [drawerHours, setDrawerHours] = useState('')
 
     useEffect(() => {
+        if (oneTime) return
+        oneTime.current = true
         tg.current.ready()
         axios.defaults.headers.common['auth'] = tg.current.initData
         tg.current.MainButton.hide()
