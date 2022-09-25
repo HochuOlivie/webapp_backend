@@ -47,10 +47,10 @@ const Choose = (props) => {
 
         }}>
             <Link to={'/partner'}>
-                <MKButton onClick={() => {setChecked(false)}} variant="gradient" color="warning" size='large'><span style={{fontSize: 28, marginRight: 18}} role="img">🚴</span> Я хочу привезти</MKButton>
+                <MKButton onClick={() => {setChecked(false)}} variant="gradient" color="warning" size='large'><span style={{fontSize: 28, marginRight: 18}} role="img">🚴</span>Привезти</MKButton>
             </Link>
             <Link to={'/customer'}>
-                <MKButton onClick={() => {setChecked(false)}} variant="gradient" color="info" size='large'><span style={{fontSize: 28,  marginRight: 18}} role="img">📦</span> Я хочу заказать</MKButton>
+                <MKButton onClick={() => {setChecked(false)}} variant="gradient" color="info" size='large'><span style={{fontSize: 28,  marginRight: 18}} role="img">📦</span>Заказать</MKButton>
             </Link>
         </Box>
         </Fade>
