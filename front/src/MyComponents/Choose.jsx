@@ -54,13 +54,29 @@ const Choose = (props) => {
                     onClick={() => {setChecked(false)}}
                     variant="gradient"
                     color="warning"
-                    size='large'
+                    // size='large'
                 >
-                    <span style={{fontSize: 28, marginRight: 18}} role="img">🚴</span>Привезти
+                    <span style={{fontSize: 23, marginRight: 18}} role="img">🚴</span>Привезти
                 </MKButton>
             </Link>
             <Link to={'/customer'}>
-                <MKButton onClick={() => {setChecked(false)}} variant="gradient" color="info" size='large'><span style={{fontSize: 28,  marginRight: 18}} role="img">📦</span>Заказать</MKButton>
+                <MKButton
+                    sx={{
+                        overflow: "hidden"
+                    }}
+                    onClick={() => {setChecked(false)}}
+                    variant="gradient"
+                    color="info"
+                    // size='large'
+                >
+                    <span
+                        style={{fontSize: 23,  marginRight: 18}}
+                        role="img"
+                    >
+                        📦
+                    </span>
+                    Заказать
+                </MKButton>
             </Link>
         </Box>
         </Fade>
