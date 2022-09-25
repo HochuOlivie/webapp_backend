@@ -51,7 +51,7 @@ class Registration:
                                    InlineKeyboardMarkup(text="Открыть карту",
                                                         web_app=WebAppInfo(url=url)
                                                         )
-                               )
+                                   )
                                )
         await state.finish()
 

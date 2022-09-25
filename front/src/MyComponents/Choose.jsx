@@ -28,7 +28,7 @@ const Choose = (props) => {
                     variant="subtitle1"
                     color="dark"
                     textGradient
-                >Выберите соответствующий пункт ниже</MKTypography>
+                >Сделай выбор</MKTypography>
             </Box>
             </Fade>
         <Fade timeout={1000} in={checked}>
