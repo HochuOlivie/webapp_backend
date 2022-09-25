@@ -1,7 +1,7 @@
 FROM node:17-alpine
 WORKDIR .
 COPY front/package.json .
-RUN npm install
+RUN npm install --force
 COPY front .
 RUN npm run build
 RUN npm install -g serve
