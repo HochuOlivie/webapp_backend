@@ -56,10 +56,10 @@ const MyMap = (props) => {
         tg.current.MainButton.text = 'Заказать здесь'
         tg.current.onEvent('mainButtonClicked', mainButtonCallback)
         tg.current.BackButton.show()
-        tg.current.BackButton.onClick(() => backButtonClick)
+        tg.current.BackButton.onClick(backButtonClick)
         mainRef.current.scrollIntoView()
         return () => {
-            tg.current.BackButton.offClick(() => backButtonClick)
+            tg.current.BackButton.offClick(backButtonClick)
             tg.current.offEvent('mainButtonClicked', mainButtonCallback)
         }
     }, [])
