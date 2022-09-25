@@ -3,12 +3,13 @@ import {YMaps, Map, ObjectManager} from "react-yandex-maps";
 import Search from "./Search";
 import SwipeableEdgeDrawer from "./SwipeableEdgeDrawer";
 import axios from "axios";
+import {useHistory} from "react-router-dom";
 
 
 const MyMap = (props) => {
     // tg web app
     const tg = useRef(window.Telegram.WebApp)
-
+    let history = useHistory();
     // ymaps
     const [map, setMap] = useState(null);
     const [ymaps, setYmaps] = useState(null);
@@ -43,14 +44,16 @@ const MyMap = (props) => {
         tg.current.MainButton.hide()
         tg.current.MainButton.text = 'Заказать здесь'
         tg.current.onEvent('mainButtonClicked', () => {
-            axios.post('https://meowcorp.ru/order', {
+            axios.post('https://api.1032649-cu51513.tmweb.ru/order', {
                 place: `${drawerTextRef.current}`,
                 address: `${drawerSecondaryTextRef.current}`,
             }).then((res) => tg.current.close()).catch((e) => tg.current.close())
         })
+        tg.BackButton.show()
+        tg.BackButton.onClick(() => history.goBack())
         mainRef.current.scrollIntoView()
 
-    }, [])
+    }, [history])
 
     useEffect(() => {
 

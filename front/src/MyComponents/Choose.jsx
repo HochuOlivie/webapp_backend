@@ -10,7 +10,10 @@ import {ThemeProvider} from "@emotion/react";
 
 const Choose = (props) => {
     const [checked, setChecked] = useState(true);
-
+    const tg = useRef(window.Telegram.WebApp)
+    useEffect(() => {
+        tg.BackButton.hide()
+    })
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />

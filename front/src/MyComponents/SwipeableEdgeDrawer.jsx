@@ -13,6 +13,7 @@ import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded';
 import SearchIcon from "@mui/icons-material/Search";
 import QueryBuilderRoundedIcon from '@mui/icons-material/QueryBuilderRounded';
 import {QueryBuilderRounded} from "@mui/icons-material";
+import {useEffect, useRef} from "react";
 
 
 const drawerBleeding = 56;
@@ -42,13 +43,18 @@ function SwipeableEdgeDrawer(props) {
     const drawerText = props.drawerText
     const drawerDescription = props.drawerSecondaryText
     const drawerHours = props.drawerHours
+    const mainRef = useRef(null)
 
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
     };
 
+    useEffect(() => {
+        // mainRef.current.scrollIntoView()
+    })
+
     return (
-        <Root>
+        <Root ref={mainRef}>
             <CssBaseline />
             <Global
                 styles={{
