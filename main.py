@@ -18,7 +18,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 app = FastAPI()
 
 API_TOKEN = '5506739202:AAGoHlJNa5CLoDqYyPsdUzikdSZnevSdHoA'
-url = 'https://thunderous-seahorse-bab4b8.netlify.app'
+url = 'https://web.1032649-cu51513.tmweb.ru/'
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)

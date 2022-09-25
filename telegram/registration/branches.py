@@ -1,5 +1,8 @@
 from aiogram import types
 from aiogram import Bot, Dispatcher
+from aiogram.types import InlineKeyboardMarkup, WebAppInfo
+
+from main import url
 from . import keyboards
 from . import callback_consts as cbc
 from aiogram.dispatcher import FSMContext
@@ -39,11 +42,17 @@ class Registration:
         await States.name.set()
 
     async def _name_handler(self, message: types.Message, state: FSMContext):
-        msg = 'Твои данные:\n-Имя: {}\n-Телефон: {}'
+        msg = 'Теперь ты можешь открыть карту, нажав на кнопку снизу'
         name = message.text
         await state.update_data(name=name)
-        phone = (await state.get_data())['phone']
-        await self.bot.send_message(message.from_user.id, msg.format(name, phone))
+        await self.bot.send_message(message.from_user.id, msg,
+                               reply_markup=InlineKeyboardMarkup()
+                               .add(
+                                   InlineKeyboardMarkup(text="Открыть карту",
+                                                        web_app=WebAppInfo(url=url)
+                                                        )
+                               )
+                               )
         await state.finish()
 
 
