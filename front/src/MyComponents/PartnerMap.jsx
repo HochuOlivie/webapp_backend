@@ -63,7 +63,7 @@ const PartnerMap = (props) => {
             tg.current.BackButton.offClick(backButtonClick)
             tg.current.offEvent('mainButtonClicked', mainButtonCallback)
             tg.current.MainButton.hide()
-            tg.current.MainButton.color = tg.current.ThemeParams.button_color
+            tg.current.MainButton.color = tg.current.themeParams.button_color
         }
     }, [])
 
