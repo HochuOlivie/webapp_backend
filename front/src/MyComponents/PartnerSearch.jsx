@@ -96,7 +96,7 @@ const PartnerSearch = (props) => {
             }}
             InputProps={{
                 startAdornment: <InputAdornment position='start'>
-                    <SearchIcon sx={{position: 'relative', right: '5px', fill: '#f44336'}}/>
+                    <SearchIcon sx={{position: 'relative', right: '5px', fill: "#c66900"}}/>
                 </InputAdornment>,
             }}
 

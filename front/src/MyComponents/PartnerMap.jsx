@@ -53,7 +53,7 @@ const PartnerMap = (props) => {
         tg.current.ready()
         axios.defaults.headers.common['auth'] = tg.current.initData
         tg.current.MainButton.hide()
-        tg.current.MainButton.color = "#ff7961"
+        tg.current.MainButton.color = "#ff9800"
         tg.current.MainButton.text = 'Привезу отсюда'
         tg.current.onEvent('mainButtonClicked', mainButtonCallback)
         tg.current.BackButton.show()
