@@ -1,21 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import TextField from "@mui/material/TextField";
 import SearchIcon from '@mui/icons-material/Search';
 import {InputAdornment} from "@mui/material";
-import IconButton from '@mui/material/IconButton';
 import fetchJsonp from "fetch-jsonp";
-import {blue, grey} from '@mui/material/colors';
 
 const Search = (props) => {
     let map = props.map
-    let ymaps = props.ymaps
     let objectManager = props.objectManager
     let setCurrentFeatures = props.setCurrentFeatures
 
     let [text, setText] = useState('')
-
-    const drawerText= props.drawerText
-    const setDrawerText= props.setDrawerText
 
     const searchInput = useRef(null);
 

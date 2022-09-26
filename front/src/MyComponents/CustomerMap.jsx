@@ -6,7 +6,7 @@ import axios from "axios";
 import {useNavigate} from "react-router-dom";
 
 
-const MyMap = (props) => {
+const CustomerMap = (props) => {
     // tg web app
     const tg = useRef(window.Telegram.WebApp)
 
@@ -151,4 +151,4 @@ const MyMap = (props) => {
     )
 };
 
-export default MyMap;
+export default CustomerMap;

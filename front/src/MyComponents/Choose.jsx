@@ -31,7 +31,7 @@ const Choose = (props) => {
                     variant="subtitle1"
                     color="dark"
                     textGradient
-                >Что хочешь сделать?</MKTypography>
+                >Выберите роль</MKTypography>
             </Box>
             </Fade>
         <Fade timeout={1000} in={checked}>
@@ -59,7 +59,7 @@ const Choose = (props) => {
                     color="warning"
                     // size='large'
                 >
-                    <span style={{fontSize: 23, marginRight: 18}} role="img">🚴</span>Привезти
+                    <span style={{fontSize: 23, marginRight: 18}} role="img">🚴</span>Партнер
                 </MKButton>
             </Link>
             <Link to={'/customer'}>
@@ -78,7 +78,7 @@ const Choose = (props) => {
                     >
                         📦
                     </span>
-                    Заказать
+                    Заказчик
                 </MKButton>
             </Link>
         </Box>
