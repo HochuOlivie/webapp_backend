@@ -81,7 +81,7 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
     if user is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     else:
-        (await Offer.objects.acreate)(data, user)
+        sync_to_async(Offer.objects.create(data, user))
     await bot.send_message(web_init_data['user']['id'],
                            'Теперь вы в роли партнера доставляете заказчикам продукты'
                            f'📍 Место <b>{name}</b>\n'
