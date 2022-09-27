@@ -19,7 +19,7 @@ from db.models import Offer, User
 from asgiref.sync import sync_to_async
 
 
-# logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
+logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
 
 app = FastAPI()
 
