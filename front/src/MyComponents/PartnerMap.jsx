@@ -42,10 +42,10 @@ const PartnerMap = (props) => {
     let [drawerHours, setDrawerHours] = useState('')
 
     const mainButtonCallback = () => {
-        axios.post('https://api.1032649-cu51513.tmweb.ru/order', {
-            place: `${drawerTextRef.current}`,
-            address: `${drawerSecondaryTextRef.current}`,
-        }).then((res) => tg.current.close()).catch((e) => tg.current.close())
+        axios.post('https://api.1032649-cu51513.tmweb.ru/offer',
+            objectManager.objects.getById(featureId.current)
+        ).then((res) => tg.current.close())
+            .catch((e) => tg.current.close())
     }
     const backButtonClick = () => navigate.current(-1)
 
@@ -65,22 +65,28 @@ const PartnerMap = (props) => {
             tg.current.MainButton.hide()
             tg.current.MainButton.color = tg.current.themeParams.button_color
         }
-    }, [])
+    }, [mainButtonCallback])
 
-
+    const mapClick = (e) => {
+        console.log(e)
+        if (featureId.current !== -1) {
+            objectManager.objects.setObjectOptions(featureId.current, {
+                preset: 'islands#blueDotIcon'
+            })
+            featureId.current = -1
+            setDrawerText('')
+            tg.current.MainButton.hide()
+        }
+    }
     useEffect(() => {
 
-        if (map && ymaps && objectManager) {
-            map.events.add('click', (e) => {
-                if (featureId.current !== -1) {
-                    objectManager.objects.setObjectOptions(featureId.current, {
-                        preset: 'islands#blueDotIcon'
-                    })
-                    featureId.current = -1
-                    setDrawerText('')
-                    tg.current.MainButton.hide()
-                }
-            });
+        if (map) {
+            map.events.add('click', mapClick)
+        }
+        return () => {
+            if (map) {
+                map.events.remove('click', mapClick)
+            }
         }
     })
 

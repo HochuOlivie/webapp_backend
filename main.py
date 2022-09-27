@@ -1,5 +1,6 @@
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 import django
 
 django.setup()
@@ -15,6 +16,7 @@ import logging
 from telegram.bot import DeliveryBot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from db.models import Offer, User
+from asgiref.sync import sync_to_async
 
 
 # logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
@@ -38,18 +40,6 @@ app.add_middleware(
 )
 
 
-# @dp.message_handler(commands="start")
-# async def on_startup(msg):
-#     await bot.send_message(msg.from_user.id, 'Сделайте заказ',
-#                            reply_markup=InlineKeyboardMarkup()
-#                            .add(
-#                                InlineKeyboardMarkup(text="Открыть карту",
-#                                               web_app=WebAppInfo(url=url)
-#                                               )
-#                                )
-#                            )
-
-
 async def get_init_data(auth: str = Header()):
     logging.debug(auth)
     if auth is None:
@@ -62,9 +52,18 @@ async def get_init_data(auth: str = Header()):
 
 
 @app.post("/order")
-async def make_order(order: Order, web_init_data=Depends(get_init_data)):
+async def make_order(request: Request, web_init_data=Depends(get_init_data)):
+    data = await request.json()
+
+    offer = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
+    if await offer.aexists():
+        await bot.send_message((await offer.afirst()).user.tg_id,
+                               f'Поступил заказ от пользователя {web_init_data["user"]["username"]}',
+                               parse_mode='HTML')
+    street = data['properties']['description']
+    name = data['properties']['name']
     await bot.send_message(web_init_data['user']['id'],
-                           f'Ваш заказ из <b>{order.place}</b> по адресу <b>{order.address}</b> вскоре будет доставлен',
+                           f'Ждём, пока кто-нибудь из партнеров примет заказ из <b>{name}</b> по адресу <b>{street}</b>',
                            parse_mode='HTML')
     return {"ok": True}
 
@@ -76,11 +75,11 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
     coords = data['geometry']['coordinates']
     street = data['properties']['description']
     name = data['properties']['name']
-    user = User.objects.filter(tg_id=web_init_data['user']['id']).first()
+    user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
     if user is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     else:
-        Offer.objects.create(json.dumps(data), user)
+        await Offer.objects.acreate(data, user)
     await bot.send_message(web_init_data['user']['id'],
                            'Теперь вы в роли партнера доставляете заказчикам продукты'
                            f'📍 Место <b>{name}</b>\n'
@@ -92,12 +91,12 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
 
 @app.get("/offers")
 async def get_offers(request: Request, web_init_data=Depends(get_init_data)):
-    res = [[i.feature_from, i.user.tg_id] for i in Offer.objects.all()]
-    return {"ok": True, 'offers': res}
+    res = [i.feature_from async for i in Offer.objects.all()]
+    return {"ok": True, 'features': res}
 
 
 @app.on_event("startup")
 async def startup_event():
-    # asyncio.create_task(my_bot.start())
-    ...
+    asyncio.create_task(my_bot.start())
+    # ...
 # executor.start_polling(dp, skip_updates=True)

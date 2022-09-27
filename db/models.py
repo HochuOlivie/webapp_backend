@@ -31,23 +31,11 @@ class Review(models.Model):
 
 
 class Order(models.Model):
-    feature_from = models.TextField()
-    feature_to = models.TextField()
+    feature_from = models.JSONField()
+    feature_to = models.JSONField()
     user = models.ForeignKey(User, default=None, blank=True, null=True, on_delete=models.CASCADE)
-
-    @property
-    def feature_from_dict(self):
-        return json.loads(str(self.feature_from))
-
-    @property
-    def feature_to_dict(self):
-        return json.loads(str(self.feature_to))
 
 
 class Offer(models.Model):
-    feature_from = models.TextField()
+    feature_from = models.JSONField()
     user = models.ForeignKey(User, default=None, blank=True, null=True, on_delete=models.CASCADE)
-
-    @property
-    def feature_from_dict(self):
-        return json.loads(str(self.feature_from))
