@@ -2,6 +2,7 @@ from aiogram import types
 from aiogram import Bot, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, WebAppInfo
 
+from db.models import User
 from initialize import url
 from . import keyboards
 from . import callback_consts as cbc
@@ -20,11 +21,21 @@ class Registration:
 
     def register_handlers(self):
         ...
-        self.dp.register_message_handler(self._contact_handler, content_types=['contact'], state='*')
+        self.dp.register_message_handler(self._contact_handler, content_types=['contact'], state=States.phone)
         self.dp.register_message_handler(self._name_handler, state=States.name)
         # self.dp.register_callback_query_handler(self._contact_handler, text=cbc.phone, state="*")
 
     async def _start_handler(self, message: types.Message):
+        if User.objects.filter(tg_id=message.from_user.id).exists():
+            await self.bot.send_message(message.from_user.id, "Сделать заказ или доставить",
+                                        reply_markup=InlineKeyboardMarkup()
+                                        .add(
+                                            InlineKeyboardMarkup(text="Открыть карту",
+                                                                 web_app=WebAppInfo(url=url)
+                                                                 )
+                                            )
+                                        )
+            return
         msg = '''Привет 👋
 Это бот для заказа продуктов из любых магазинов, где каждый может выступать как в роли курьера, так и в роли заказчика.
 Для продолжения необходимо пройти короткую регистрацию. Нажми кнопку, чтобы поделиться номером телефона'''
@@ -33,6 +44,7 @@ class Registration:
         phone_keyboard.add(phone_button)
 
         await self.bot.send_message(message.from_user.id, msg, reply_markup=phone_keyboard)
+        await States.phone.set()
 
     async def _contact_handler(self, message: types.Message, state: FSMContext):
         msg = 'Отлично! Теперь напиши, как к тебе могут обращаться другие пользователи'
@@ -45,6 +57,12 @@ class Registration:
         msg = 'Теперь ты можешь открыть карту, нажав на кнопку снизу'
         name = message.text
         await state.update_data(name=name)
+        User.objects.create(
+            tg_id=message.from_user.id,
+            tg_username=message.from_user.username,
+            name=await state.get_data('name'),
+            phone=await state.get_data('phone'),
+        )
         await self.bot.send_message(message.from_user.id, msg,
                                reply_markup=InlineKeyboardMarkup()
                                .add(
@@ -54,9 +72,3 @@ class Registration:
                                    )
                                )
         await state.finish()
-
-
-
-
-
-

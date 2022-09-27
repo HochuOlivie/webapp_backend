@@ -72,7 +72,6 @@ const PartnerMap = (props) => {
 
         if (map && ymaps && objectManager) {
             map.events.add('click', (e) => {
-                console.log(e)
                 if (featureId.current !== -1) {
                     objectManager.objects.setObjectOptions(featureId.current, {
                         preset: 'islands#blueDotIcon'
@@ -99,6 +98,7 @@ const PartnerMap = (props) => {
                     preset: 'islands#lightBlueDotIcon'
                 })
                 const placemark = objectManager.objects.getById(objectId)
+                console.log(placemark)
                 map.panTo(placemark.geometry.coordinates)
                 // setting current company name
                 setDrawerText(placemark.properties.name ?? '-')
