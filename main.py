@@ -76,6 +76,7 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
     street = data['properties']['description']
     name = data['properties']['name']
     user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
+    logging.DEBUG(user)
     if user is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     else:
