@@ -54,17 +54,19 @@ async def get_init_data(auth: str = Header()):
 @app.post("/order")
 async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     data = await request.json()
-    logging.debug((await Offer.objects.all().afirst()).feature_from)
-    logging.debug(data)
     offer = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     if await offer.aexists():
+
         await bot.send_message((await offer.afirst()).user.tg_id,
-                               f'Поступил заказ от пользователя {web_init_data["user"]["username"]}',
+                               f'Поступил заказ от пользователя @{web_init_data["user"]["username"]}',
                                parse_mode='HTML')
     street = data['properties']['description']
     name = data['properties']['name']
     await bot.send_message(web_init_data['user']['id'],
-                           f'Ждём, пока кто-нибудь из партнеров примет заказ из <b>{name}</b> по адресу <b>{street}</b>',
+                           f'Ждём, пока кто-нибудь из партнеров примет заказ'
+                           f'📍 Место <b>{name}</b>\n'
+                           f'🏢 Адрес <b>{street}</b>\n\n'
+                           f'Партнер, который примет заказ, появится в текущем чате',
                            parse_mode='HTML')
     return {"ok": True}
 
