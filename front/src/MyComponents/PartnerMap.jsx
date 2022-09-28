@@ -17,7 +17,6 @@ const PartnerMap = (props) => {
     const [map, setMap] = useState(null);
     const [ymaps, setYmaps] = useState(null);
     const [objectManager, setObjectManager] = useState(null);
-    const objectManagerRef = useRef(objectManager)
     const mainRef = useRef(null)
     // Current placemarks on map
     let [currentFeatures, setCurrentFeatures] = useState({})
@@ -44,7 +43,7 @@ const PartnerMap = (props) => {
 
     const mainButtonCallback = () => {
         axios.post('https://api.1032649-cu51513.tmweb.ru/offer',
-            objectManagerRef.current.objects.getById(featureId.current)
+            objectManager.objects.getById(featureId.current)
         ).then((res) => tg.current.close())
             .catch((e) => tg.current.close())
     }
