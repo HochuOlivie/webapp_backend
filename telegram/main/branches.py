@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types
 from aiogram import Bot, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, WebAppInfo
@@ -25,10 +27,11 @@ class Main:
 
     async def _delete_order(self, callback: types.CallbackQuery):
         _, order_id = callback.data.split(':')
-        sync_to_async((await Order.objects.aget(id=order_id)).delete())
+        sync_to_async((await Order.objects.aget(id=order_id)).delete)()
+        logging.debug('1234123412341234123412341234123412341233412341234')
         await callback.message.edit_text('Курьеры больше не будут видеть ваш заказ')
 
     async def _delete_offer(self, callback: types.CallbackQuery):
         _, offer_id = callback.data.split(':')
-        sync_to_async((await Offer.objects.aget(id=offer_id)).delete())
+        sync_to_async((await Offer.objects.aget(id=offer_id)).delete)()
         await callback.message.edit_text('Заказчики больше не будут видеть ваше предложение')
