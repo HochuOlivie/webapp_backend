@@ -43,9 +43,9 @@ const CustomerMap = (props) => {
     let [drawerHours, setDrawerHours] = useState('')
 
     const mainButtonCallback = () => {
-        axios.post('https://api.1032649-cu51513.tmweb.ru/order', {
-
-        }).then((res) => tg.current.close()).catch((e) => tg.current.close())
+        axios.post('https://api.1032649-cu51513.tmweb.ru/order',
+            objectManager.objects.getById(featureId.current)
+            ).then((res) => tg.current.close()).catch((e) => tg.current.close())
     }
     const backButtonClick = () => navigate.current(-1)
 
