@@ -61,7 +61,7 @@ const CustomerMap = (props) => {
         return () => {
             tg.current.BackButton.offClick(backButtonClick)
             tg.current.offEvent('mainButtonClicked', mainButtonCallback)
-            // tg.current.MainButton.hide()
+            tg.current.MainButton.hide()
             tg.current.MainButton.color = tg.current.themeParams.button_color
         }
     }, [mainButtonCallback])
@@ -100,7 +100,7 @@ const CustomerMap = (props) => {
             }
             featureId.current = -1
             setDrawerText('')
-            tg.current.MainButton.hide()
+            // tg.current.MainButton.hide()
         }
     }
     useEffect(() => {
