@@ -1,7 +1,8 @@
 from aiogram import executor, Bot, Dispatcher
 from .registration.branches import Registration
+from .main.branches import Main
 
-BRANCHES = [Registration]
+BRANCHES = [Registration, Main]
 
 
 class DeliveryBot:

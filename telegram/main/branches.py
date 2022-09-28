@@ -7,7 +7,7 @@ from initialize import url
 from aiogram.dispatcher import FSMContext
 
 
-class Registration:
+class Main:
     def __init__(self, bot, dp):
         self.bot: Bot = bot
         self.dp: Dispatcher = dp
