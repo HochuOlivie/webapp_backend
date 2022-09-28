@@ -64,7 +64,7 @@ const CustomerMap = (props) => {
             tg.current.MainButton.hide()
             tg.current.MainButton.color = tg.current.themeParams.button_color
         }
-    }, [])
+    }, [mainButtonCallback])
 
     useEffect(() => {
         if (objectManager === null) {
