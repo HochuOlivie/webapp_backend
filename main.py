@@ -76,8 +76,8 @@ async def make_order(request: Request, web_init_data=Depends(get_init_data)):
         await bot.send_message(offer.user.tg_id,
                                f'Поступил заказ от пользователя @{web_init_data["user"]["username"]}',
                                reply_markup=InlineKeyboardMarkup(row_width=2).add(
-                                   InlineKeyboardButton("✅ Принять заказ", callback_data=f'order_accept:{order.id}'),
-                                   InlineKeyboardButton("❌ Отклонить заказ", callback_data=f'order_decline:{order.id}')
+                                   InlineKeyboardButton("✅ Принять", callback_data=f'order_accept:{order.id}'),
+                                   InlineKeyboardButton("❌ Отклонить", callback_data=f'order_decline:{order.id}')
                                ),
                                parse_mode='HTML')
     return {"ok": True}
@@ -112,8 +112,8 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
         await bot.send_message(web_init_data["user"]["id"],
                                f'Поступил заказ от пользователя @{order.user.tg_username}',
                                reply_markup=InlineKeyboardMarkup(row_width=2).add(
-                                   InlineKeyboardButton("✅ Принять заказ", callback_data=f'order_accept:{order.id}'),
-                                   InlineKeyboardButton("❌ Отклонить заказ", callback_data=f'order_decline:{order.id}')
+                                   InlineKeyboardButton("✅ Принять", callback_data=f'order_accept:{order.id}'),
+                                   InlineKeyboardButton("❌ Отклонить", callback_data=f'order_decline:{order.id}')
                                ),
                                parse_mode='HTML')
     return {"ok": True}
