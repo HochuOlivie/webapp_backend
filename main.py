@@ -74,7 +74,7 @@ async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     offers = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     async for offer in offers:
         await bot.send_message(offer.user.tg_id,
-                               f'Поступил заказ от пользователя @{web_init_data["user"]["username"]}',
+                               f'Поступил заказ',
                                reply_markup=InlineKeyboardMarkup(row_width=2).add(
                                    InlineKeyboardButton("✅ Принять", callback_data=f'order_accept:{order.id}'),
                                    InlineKeyboardButton("❌ Отклонить", callback_data=f'order_decline:{order.id}')
