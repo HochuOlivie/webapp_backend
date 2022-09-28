@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {YMaps, Map, ObjectManager} from "react-yandex-maps";
 import PartnerSearch from "./PartnerSearch";
 import SwipeableEdgeDrawer from "./SwipeableEdgeDrawer";
@@ -20,7 +20,7 @@ const PartnerMap = (props) => {
     const mainRef = useRef(null)
     // Current placemarks on map
     let [currentFeatures, setCurrentFeatures] = useState({})
-    let featureId = useRef(-1)
+    let featureId = useRef(null)
 
     // Current swipeable paper params
     let [drawerText, _setDrawerText] = useState('')
@@ -41,13 +41,33 @@ const PartnerMap = (props) => {
 
     let [drawerHours, setDrawerHours] = useState('')
 
-    const mainButtonCallback = () => {
+    useEffect(() => {
+        if (objectManager === null) {
+            return
+        }
+        axios.get('https://api.1032649-cu51513.tmweb.ru/orders')
+            .then((res) => {
+                const data = res.data
+                data.features = data.features.map((element, id) => {
+                    element.id = -id - 1
+                    element.options.preset = "islands#nightDotIcon"
+                    return element
+                })
+                const features = {'type': 'FeatureCollection', 'features': data.features}
+                objectManager.objects.add(features)
+
+            })
+            .catch((e) => tg.current.close())
+
+    }, [objectManager])
+
+    const backButtonClick = () => navigate.current(-1)
+    const mainButtonCallback = useCallback(() => {
         axios.post('https://api.1032649-cu51513.tmweb.ru/offer',
             objectManager.objects.getById(featureId.current)
         ).then((res) => tg.current.close())
             .catch((e) => tg.current.close())
-    }
-    const backButtonClick = () => navigate.current(-1)
+    }, [objectManager])
 
     useEffect(() => {
         tg.current.ready()
@@ -68,16 +88,22 @@ const PartnerMap = (props) => {
     }, [mainButtonCallback])
 
     const mapClick = (e) => {
-        console.log(e)
-        if (featureId.current !== -1) {
-            objectManager.objects.setObjectOptions(featureId.current, {
-                preset: 'islands#blueDotIcon'
-            })
+        if (featureId.current) {
+            if (featureId.current >= 0) {
+                objectManager.objects.setObjectOptions(featureId.current, {
+                    preset: 'islands#blueDotIcon'
+                })
+            } else {
+                objectManager.objects.setObjectOptions(featureId.current, {
+                    preset: 'islands#nightDotIcon'
+                })
+            }
             featureId.current = -1
             setDrawerText('')
             tg.current.MainButton.hide()
         }
     }
+
     useEffect(() => {
 
         if (map) {
@@ -95,16 +121,30 @@ const PartnerMap = (props) => {
             objectManager.objects.events.add('click', (e) => {
                 // changing pm color && pining map to pm
                 const objectId = e.get('objectId');
-                if (featureId.current !== objectId) {
-                    objectManager.objects.setObjectOptions(featureId.current, {
-                        preset: 'islands#blueDotIcon'
+                console.log(objectId)
+                if (featureId.current && featureId.current !== objectId) {
+                    if (featureId.current >= 0) {
+                        objectManager.objects.setObjectOptions(featureId.current, {
+                            preset: 'islands#blueDotIcon'
+                        })
+                    } else {
+                        objectManager.objects.setObjectOptions(featureId.current, {
+                            preset: 'islands#nightDotIcon'
+                        })
+                    }
+                }
+                if (objectId >= 0) {
+                    console.log('not correct')
+                    objectManager.objects.setObjectOptions(objectId, {
+                        preset: 'islands#lightBlueDotIcon'
+                    })
+                } else {
+                    console.log('correct)')
+                    objectManager.objects.setObjectOptions(objectId, {
+                        preset: 'islands#greyDotIcon'
                     })
                 }
-                objectManager.objects.setObjectOptions(objectId, {
-                    preset: 'islands#lightBlueDotIcon'
-                })
                 const placemark = objectManager.objects.getById(objectId)
-                console.log(placemark)
                 map.panTo(placemark.geometry.coordinates)
                 // setting current company name
                 setDrawerText(placemark.properties.name ?? '-')

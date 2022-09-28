@@ -2,20 +2,18 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 import django
-
 django.setup()
+
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 import json
 from fastapi import FastAPI, Depends, HTTPException, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.wsgi import WSGIMiddleware
 from aiogram.utils.web_app import safe_parse_webapp_init_data
-from serializers import Order
 import logging
 from telegram.bot import DeliveryBot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from db.models import Offer, User
+from db.models import Offer, User, Order
 from asgiref.sync import sync_to_async
 
 
@@ -54,20 +52,25 @@ async def get_init_data(auth: str = Header()):
 @app.post("/order")
 async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     data = await request.json()
-    offer = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
-    if await offer.aexists():
-
-        await bot.send_message((await offer.afirst()).user.tg_id,
-                               f'Поступил заказ от пользователя @{web_init_data["user"]["username"]}',
-                               parse_mode='HTML')
+    user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
+    if user is None:
+        raise HTTPException(status_code=400, detail="Not authorized")
+    else:
+        await sync_to_async(Order.objects.create)(feature_from=data, user=user)
     street = data['properties']['description']
     name = data['properties']['name']
-    await bot.send_message(web_init_data['user']['id'],
-                           f'Ждём, пока кто-нибудь из партнеров примет заказ'
+    await bot.send_message(user.tg_id,
+                           f'📦 Ждём, пока кто-нибудь из партнеров примет заказ\n\n'
                            f'📍 Место <b>{name}</b>\n'
                            f'🏢 Адрес <b>{street}</b>\n\n'
                            f'Партнер, который примет заказ, появится в текущем чате',
                            parse_mode='HTML')
+
+    offers = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
+    async for offer in offers:
+        await bot.send_message(offer.user.tg_id,
+                               f'Поступил заказ от пользователя @{web_init_data["user"]["username"]}',
+                               parse_mode='HTML')
     return {"ok": True}
 
 
@@ -86,17 +89,29 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
     else:
         await sync_to_async(Offer.objects.create)(feature_from=data, user=user)
     await bot.send_message(web_init_data['user']['id'],
-                           'Теперь вы в роли партнера доставляете заказчикам продукты'
+                           '🚴 Теперь вы в роли партнера доставляете заказчикам продукты\n\n'
                            f'📍 Место <b>{name}</b>\n'
                            f'🏢 Адрес <b>{street}</b>.\n\n'
                            f'Заказчики будут высвечиваться в текущем чате',
                            parse_mode='HTML')
+
+    orders = Order.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
+    async for order in orders:
+        await bot.send_message(web_init_data["user"]["username"],
+                               f'Поступил заказ от пользователя @{order.user.tg_id}',
+                               parse_mode='HTML')
     return {"ok": True}
 
 
 @app.get("/offers")
 async def get_offers(request: Request, web_init_data=Depends(get_init_data)):
     res = [i.feature_from async for i in Offer.objects.all()]
+    return {"ok": True, 'features': res}
+
+
+@app.get("/orders")
+async def get_offers(request: Request, web_init_data=Depends(get_init_data)):
+    res = [i.feature_from async for i in Order.objects.all()]
     return {"ok": True, 'features': res}
 
 

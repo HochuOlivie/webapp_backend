@@ -32,7 +32,7 @@ class Review(models.Model):
 
 class Order(models.Model):
     feature_from = models.JSONField()
-    feature_to = models.JSONField()
+    # feature_to = models.JSONField()
     user = models.ForeignKey(User, default=None, blank=True, null=True, on_delete=models.CASCADE)
 
 

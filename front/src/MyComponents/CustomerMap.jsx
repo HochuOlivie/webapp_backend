@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {YMaps, Map, ObjectManager} from "react-yandex-maps";
 import Search from "./Search";
 import SwipeableEdgeDrawer from "./SwipeableEdgeDrawer";
@@ -42,11 +42,13 @@ const CustomerMap = (props) => {
 
     let [drawerHours, setDrawerHours] = useState('')
 
-    const mainButtonCallback = () => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const mainButtonCallback = useCallback(() => {
         axios.post('https://api.1032649-cu51513.tmweb.ru/order',
             objectManager.objects.getById(featureId.current)
             ).then((res) => tg.current.close()).catch((e) => tg.current.close())
-    }
+    }, [objectManager])
+
     const backButtonClick = () => navigate.current(-1)
 
     useEffect(() => {
@@ -87,7 +89,6 @@ const CustomerMap = (props) => {
     }, [objectManager])
 
     const mapClick = (e) => {
-        console.log(e)
         if (featureId.current) {
             if (featureId.current >= 0) {
                 objectManager.objects.setObjectOptions(featureId.current, {
