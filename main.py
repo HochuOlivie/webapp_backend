@@ -1,9 +1,11 @@
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
 import django
 django.setup()
 
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 import json
@@ -56,7 +58,7 @@ async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     if user is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     else:
-        await sync_to_async(Order.objects.create)(feature_from=data, user=user)
+        order = await sync_to_async(Order.objects.create)(feature_from=data, user=user)
     street = data['properties']['description']
     name = data['properties']['name']
     await bot.send_message(user.tg_id,
@@ -64,12 +66,19 @@ async def make_order(request: Request, web_init_data=Depends(get_init_data)):
                            f'📍 Место <b>{name}</b>\n'
                            f'🏢 Адрес <b>{street}</b>\n\n'
                            f'Партнер, который примет заказ, появится в текущем чате',
+                           reply_markup=InlineKeyboardMarkup().add(
+                               InlineKeyboardButton("❌ Отменить заказ", callback_data=f'order_delete:{order.id}')
+                           ),
                            parse_mode='HTML')
 
     offers = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     async for offer in offers:
         await bot.send_message(offer.user.tg_id,
                                f'Поступил заказ от пользователя @{web_init_data["user"]["username"]}',
+                               reply_markup=InlineKeyboardMarkup(row_width=2).add(
+                                   InlineKeyboardButton("✅ Принять заказ", callback_data=f'order_accept:{order.id}'),
+                                   InlineKeyboardButton("❌ Отклонить заказ", callback_data=f'order_decline:{order.id}')
+                               ),
                                parse_mode='HTML')
     return {"ok": True}
 
@@ -87,18 +96,25 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
     if user is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     else:
-        await sync_to_async(Offer.objects.create)(feature_from=data, user=user)
+        offer = await sync_to_async(Offer.objects.create)(feature_from=data, user=user)
     await bot.send_message(web_init_data['user']['id'],
                            '🚴 Теперь вы в роли партнера доставляете заказчикам продукты\n\n'
                            f'📍 Место <b>{name}</b>\n'
                            f'🏢 Адрес <b>{street}</b>.\n\n'
                            f'Заказчики будут высвечиваться в текущем чате',
+                           reply_markup=InlineKeyboardMarkup().add(
+                               InlineKeyboardButton("❌ Больше не принимать заказы", callback_data=f'offer_delete:{offer.id}')
+                           ),
                            parse_mode='HTML')
 
     orders = Order.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     async for order in orders:
         await bot.send_message(web_init_data["user"]["id"],
                                f'Поступил заказ от пользователя @{order.user.tg_username}',
+                               reply_markup=InlineKeyboardMarkup(row_width=2).add(
+                                   InlineKeyboardButton("✅ Принять заказ", callback_data=f'order_accept:{order.id}'),
+                                   InlineKeyboardButton("❌ Отклонить заказ", callback_data=f'order_decline:{order.id}')
+                               ),
                                parse_mode='HTML')
     return {"ok": True}
 
@@ -119,4 +135,3 @@ async def get_offers(request: Request, web_init_data=Depends(get_init_data)):
 async def startup_event():
     asyncio.create_task(my_bot.start())
     # ...
-# executor.start_polling(dp, skip_updates=True)
