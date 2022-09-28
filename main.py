@@ -97,7 +97,7 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
 
     orders = Order.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     async for order in orders:
-        await bot.send_message(web_init_data["user"]["username"],
+        await bot.send_message(web_init_data["user"]["id"],
                                f'Поступил заказ от пользователя @{order.user.tg_id}',
                                parse_mode='HTML')
     return {"ok": True}
