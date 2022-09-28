@@ -55,6 +55,7 @@ async def get_init_data(auth: str = Header()):
 async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     data = await request.json()
     logging.debug((await Offer.objects.all().afirst()).feature_from)
+    logging.debug(data)
     offer = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     if await offer.aexists():
         await bot.send_message((await offer.afirst()).user.tg_id,
