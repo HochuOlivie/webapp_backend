@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram import Bot, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, WebAppInfo
+from asgiref.sync import sync_to_async
 
 from db.models import User, Order, Offer
 from initialize import url
@@ -22,12 +23,12 @@ class Main:
         self.dp.register_callback_query_handler(self._delete_order, text_startswith='order_delete', state="*")
         self.dp.register_callback_query_handler(self._delete_offer, text_startswith='offer_delete', state="*")
 
-    def _delete_order(self, callback: types.CallbackQuery):
+    async def _delete_order(self, callback: types.CallbackQuery):
         _, order_id = callback.data.split(':')
-        Order.objects.get(id=order_id).delete()
-        callback.message.edit_text('Курьеры больше не будут видеть ваш заказ')
+        sync_to_async((await Order.objects.aget(id=order_id)).delete())
+        await callback.message.edit_text('Курьеры больше не будут видеть ваш заказ')
 
-    def _delete_offer(self, callback: types.CallbackQuery):
+    async def _delete_offer(self, callback: types.CallbackQuery):
         _, offer_id = callback.data.split(':')
-        Offer.objects.get(id=offer_id).delete()
-        callback.message.edit_text('Заказчики больше не будут видеть ваше предложение')
+        sync_to_async((await Offer.objects.aget(id=offer_id)).delete())
+        await callback.message.edit_text('Заказчики больше не будут видеть ваше предложение')
