@@ -4,12 +4,12 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 import django
 
 django.setup()
-
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 import json
 from fastapi import FastAPI, Depends, HTTPException, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.wsgi import WSGIMiddleware
 from aiogram.utils.web_app import safe_parse_webapp_init_data
 from serializers import Order
 import logging
@@ -54,7 +54,7 @@ async def get_init_data(auth: str = Header()):
 @app.post("/order")
 async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     data = await request.json()
-
+    logging.debug((await Offer.objects.all().afirst()).feature_from)
     offer = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     if await offer.aexists():
         await bot.send_message((await offer.afirst()).user.tg_id,
