@@ -17,7 +17,7 @@ const CustomerMap = (props) => {
     const [map, setMap] = useState(null);
     const [ymaps, setYmaps] = useState(null);
     const [objectManager, setObjectManager] = useState(null);
-
+    const objectManagerRef = useRef(objectManager)
     const mainRef = useRef(null)
     // Current placemarks on map
     let [currentFeatures, setCurrentFeatures] = useState({})
@@ -44,12 +44,13 @@ const CustomerMap = (props) => {
 
     const mainButtonCallback = () => {
         axios.post('https://api.1032649-cu51513.tmweb.ru/order',
-            objectManager.objects.getById(featureId.current)
+            objectManagerRef.current.objectManager.objects.getById(featureId.current)
             ).then((res) => tg.current.close()).catch((e) => tg.current.close())
     }
     const backButtonClick = () => navigate.current(-1)
 
     useEffect(() => {
+        console.log(123)
         tg.current.ready()
         axios.defaults.headers.common['auth'] = tg.current.initData
         tg.current.MainButton.hide()
@@ -64,7 +65,7 @@ const CustomerMap = (props) => {
             tg.current.MainButton.hide()
             tg.current.MainButton.color = tg.current.themeParams.button_color
         }
-    }, [mainButtonCallback])
+    }, [])
 
     useEffect(() => {
         if (objectManager === null) {
@@ -100,7 +101,7 @@ const CustomerMap = (props) => {
             }
             featureId.current = -1
             setDrawerText('')
-            // tg.current.MainButton.hide()
+            tg.current.MainButton.hide()
         }
     }
     useEffect(() => {
@@ -133,12 +134,10 @@ const CustomerMap = (props) => {
                     }
                 }
                 if (objectId >= 0) {
-                    console.log('not correct')
                     objectManager.objects.setObjectOptions(objectId, {
                         preset: 'islands#lightBlueDotIcon'
                     })
                 } else {
-                    console.log('correct)')
                     objectManager.objects.setObjectOptions(objectId, {
                         preset: 'islands#greyDotIcon'
                     })
