@@ -24,6 +24,7 @@ const PartnerMap = (props) => {
     let [currentFeatures, setCurrentFeatures] = useState([])
     let featureId = useRef(null)
 
+    let city = useRef(null)
     // Current swipeable paper params
     let [drawerText, _setDrawerText] = useState('')
     const drawerTextRef = useRef(drawerText)
@@ -203,11 +204,47 @@ const PartnerMap = (props) => {
         }
     }, [map, objectManager])
 
+    const currGeoLocation = useRef(null)
+    // user geolocation
+    useEffect(() => {
+        if (ymaps !== null && map !== null && currGeoLocation.current === null) {
+            var location = ymaps.geolocation.get();
+            currGeoLocation.current = location
+            // Асинхронная обработка ответа.
+            location.then(
+                function (result) {
+                    fetchJsonp(`https://geocode-maps.yandex.ru/1.x/?format=json&apikey=4240729e-72a9-4ece-815e-704470532e85&geocode=${location._value.geoObjects.position[1]},${location._value.geoObjects.position[0]}&results=1`, {
+                        jsonpCallback: "callback"
+                    })
+                        .then((res) => res.json())
+                        .then((res) => {
+                            console.log(res)
+                            const addrParts = res.response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.Address.Components
+                            city.current = addrParts[addrParts.findIndex((x) => x.kind === 'locality')]['name']
+                            console.log(city.current)
+                        })
+                    // Добавление местоположения на карту.
+                    map.geoObjects.add(result.geoObjects)
+                    console.log(result)
+                    map.panTo(location._value.geoObjects.position)
+                },
+                function (err) {
+                    console.log('Ошибка: ' + err)
+                }
+            );
+        }
+        return () => {
+            if (ymaps !== null && map !== null) {
+                map.geoObjects.remove(currGeoLocation.current)
+            }
+        }
+    })
+
     return (
         <div ref={mainRef} style={{height: '100%', width: '100%'}}>
-            <YMaps rrrder={rerender} query={{ load: ['ObjectManager', 'Placemark'] }}>
+            <YMaps rrrder={rerender} query={{ load: ['ObjectManager', 'Placemark', 'geolocation'], apikey: '4240729e-72a9-4ece-815e-704470532e85' }}>
                 <Map defaultState={{
-                    center: [54.965021, 82.937751],
+                    center: [55.7188843, 37.5227127],
                     zoom: 10,
                 }}
                      width={'100%'} height={'100%'}
@@ -238,7 +275,7 @@ const PartnerMap = (props) => {
                     {/*<Placemark geometry={[55.73003,37.730056]} options={{'color': 'rgb(155, 102, 102)'}} />*/}
                 </Map>
             </YMaps>
-            <PartnerSearch drawerText={drawerText} setDrawerText={setDrawerText} map={map} ymaps={ymaps} objectManager={objectManager} currentFeatures={currentFeatures} setCurrentFeatures={setCurrentFeatures} />
+            <PartnerSearch city={city} drawerText={drawerText} setDrawerText={setDrawerText} map={map} ymaps={ymaps} objectManager={objectManager} currentFeatures={currentFeatures} setCurrentFeatures={setCurrentFeatures} />
             <SwipeableEdgeDrawer open={drawerOpen} setOpen={setDrawerOpen} drawerHours={drawerHours} drawerText={drawerText} drawerSecondaryText={drawerSecondaryText} />
         </div>
     )

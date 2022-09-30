@@ -8,7 +8,7 @@ const Search = (props) => {
     let map = props.map
     let objectManager = props.objectManager
     let setCurrentFeatures = props.setCurrentFeatures
-
+    let city = props.city
     let [text, setText] = useState('')
 
     const searchInput = useRef(null);
@@ -31,6 +31,10 @@ const Search = (props) => {
             element.geometry.coordinates.reverse()
             return element
         })
+        data.features = data.features.filter(function(item) {
+            return item.properties.description.includes(city.current)
+        });
+
         setCurrentFeatures(data.features)
         map.setBounds(objectManager.getBounds(), {
             checkZoomRange: true,
@@ -39,7 +43,7 @@ const Search = (props) => {
 
     const performSearch = (text) => {
         // placeFeatureCollection({})
-        fetchJsonp(`https://search-maps.yandex.ru/v1/?text=${text},Новосибирск&type=biz&lang=ru_RU&apikey=3eeb727a-9b93-4fde-80c2-07b68a6073d5&results=500`, {
+        fetchJsonp(`https://search-maps.yandex.ru/v1/?text=${text},${city.current}&type=biz&lang=ru_RU&apikey=3eeb727a-9b93-4fde-80c2-07b68a6073d5&results=500`, {
             jsonpCallback: "callback"
         })
             .then((res) => res.json())

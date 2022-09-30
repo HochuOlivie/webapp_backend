@@ -9,7 +9,7 @@ const PartnerSearch = (props) => {
     let map = props.map
     let objectManager = props.objectManager
     let setCurrentFeatures = props.setCurrentFeatures
-
+    let city = props.city
     let [text, setText] = useState('')
 
     const searchInput = useRef(null);
@@ -26,15 +26,20 @@ const PartnerSearch = (props) => {
     }
 
     const placeFeatureCollection = (data) => {
-        console.log(data)
+        console.log(123)
         // objectManager.removeAll()
         data.features = data.features.map((element, id) => {
             element.id = id * 2 + 1
             element.geometry.coordinates.reverse()
             return element
         })
+        console.log(1234)
+        data.features = data.features.filter(function(item) {
+            return item.properties.description.includes(city.current)
+        });
+        console.log(1234567)
         setCurrentFeatures(data.features)
-        // objectManager.add(data);
+        console.log(objectManager.getBounds())
         map.setBounds(objectManager.getBounds(), {
             checkZoomRange: true,
         })
@@ -42,7 +47,7 @@ const PartnerSearch = (props) => {
 
     const performSearch = (text) => {
         // placeFeatureCollection({})
-        fetchJsonp(`https://search-maps.yandex.ru/v1/?text=${text},Новосибирск&type=biz&lang=ru_RU&apikey=3eeb727a-9b93-4fde-80c2-07b68a6073d5&results=500`, {
+        fetchJsonp(`https://search-maps.yandex.ru/v1/?text=${text},${city.current}&type=biz&lang=ru_RU&apikey=3eeb727a-9b93-4fde-80c2-07b68a6073d5&results=500`, {
             jsonpCallback: "callback"
         })
             .then((res) => res.json())
