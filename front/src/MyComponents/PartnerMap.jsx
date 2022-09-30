@@ -4,6 +4,7 @@ import PartnerSearch from "./PartnerSearch";
 import SwipeableEdgeDrawer from "./SwipeableEdgeDrawer";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import fetchJsonp from "fetch-jsonp";
 
 
 const PartnerMap = (props) => {
@@ -18,8 +19,9 @@ const PartnerMap = (props) => {
     const [ymaps, setYmaps] = useState(null);
     const [objectManager, setObjectManager] = useState(null);
     const mainRef = useRef(null)
+    const [rerender, setRerender] = useState(false);
     // Current placemarks on map
-    let [currentFeatures, setCurrentFeatures] = useState({})
+    let [currentFeatures, setCurrentFeatures] = useState([])
     let featureId = useRef(null)
 
     // Current swipeable paper params
@@ -86,9 +88,54 @@ const PartnerMap = (props) => {
             tg.current.MainButton.color = tg.current.themeParams.button_color
         }
     }, [mainButtonCallback])
-
+    const ftId = useRef(2)
     const mapClick = (e) => {
-        if (featureId.current) {
+        console.log(currentFeatures)
+        ftId.current += 2
+        if (map && ymaps) {
+            // let pm = new ymaps.Placemark(e.get('coords'));
+            // map.geoObjects.add(pm);
+            const feature = {
+                type: 'Feature',
+                id: ftId.current,
+                geometry: {
+                    type: 'Point',
+                    coordinates: e.get('coords')
+                },
+                properties: {
+                    CompanyMetaData: {}
+                }
+            }
+
+            fetchJsonp(`https://geocode-maps.yandex.ru/1.x/?format=json&apikey=4240729e-72a9-4ece-815e-704470532e85&geocode=${e.get('coords')[1]},${e.get('coords')[0]}&results=1`, {
+                jsonpCallback: "callback"
+            })
+                .then((res) => res.json())
+                .then((res) => {
+                    feature.properties.name = res.response.GeoObjectCollection.featureMember[0].GeoObject.name;
+                    feature.properties.description = res.response.GeoObjectCollection.featureMember[0].GeoObject.description
+                    setDrawerText(feature.properties.name ?? '-')
+                    setDrawerSecondaryText(feature.properties.description ?? '-')
+                    setDrawerHours(feature.properties.CompanyMetaData.Hours ? feature.properties.CompanyMetaData.Hours.text : '-')
+                    setDrawerOpen(true)
+                })
+                .catch(function(ex) {
+                    console.log('parsing failed', ex)
+                })
+
+            let fts = JSON.parse(JSON.stringify(currentFeatures))
+            const index = fts.findIndex((x) => x.id === (ftId.current - 2))
+            if (index > -1) {
+                fts.splice(fts.findIndex((x) => x.id === 0), 1)
+            }
+            fts.push(feature)
+            setCurrentFeatures(fts)
+            objectManager.objects.setObjectOptions(ftId.current, {
+                preset: 'islands#lightBlueDotIcon'
+            })
+            tg.current.MainButton.show()
+        }
+        if (featureId.current !== null) {
             if (featureId.current >= 0) {
                 objectManager.objects.setObjectOptions(featureId.current, {
                     preset: 'islands#blueDotIcon'
@@ -98,10 +145,8 @@ const PartnerMap = (props) => {
                     preset: 'islands#nightDotIcon'
                 })
             }
-            featureId.current = -1
-            setDrawerText('')
-            tg.current.MainButton.hide()
         }
+        featureId.current = ftId.current
     }
 
     useEffect(() => {
@@ -122,7 +167,7 @@ const PartnerMap = (props) => {
                 // changing pm color && pining map to pm
                 const objectId = e.get('objectId');
                 console.log(objectId)
-                if (featureId.current && featureId.current !== objectId) {
+                if (featureId.current !== null && featureId.current !== objectId) {
                     if (featureId.current >= 0) {
                         objectManager.objects.setObjectOptions(featureId.current, {
                             preset: 'islands#blueDotIcon'
@@ -160,7 +205,7 @@ const PartnerMap = (props) => {
 
     return (
         <div ref={mainRef} style={{height: '100%', width: '100%'}}>
-            <YMaps query={{ load: ['ObjectManager', 'Placemark'] }}>
+            <YMaps rrrder={rerender} query={{ load: ['ObjectManager', 'Placemark'] }}>
                 <Map defaultState={{
                     center: [54.965021, 82.937751],
                     zoom: 10,
@@ -171,10 +216,10 @@ const PartnerMap = (props) => {
                      defaultOptions={{yandexMapDisablePoiInteractivity: true}}
                 >
                     <ObjectManager
-                        options={{
-                            clusterize: true,
-                            gridSize: 32,
-                        }}
+                        // options={{
+                        //     clusterize: true,
+                        //     gridSize: 1,
+                        // }}
                         objects={{
                             openBalloonOnClick: true,
                             preset: 'islands#blueDotIcon',

@@ -26,14 +26,12 @@ const Search = (props) => {
 
     const placeFeatureCollection = (data) => {
         console.log(data)
-        // objectManager.removeAll()
         data.features = data.features.map((element, id) => {
-            element.id = id
+            element.id = id * 2 + 1
             element.geometry.coordinates.reverse()
             return element
         })
-        setCurrentFeatures(data)
-        // objectManager.add(data);
+        setCurrentFeatures(data.features)
         map.setBounds(objectManager.getBounds(), {
             checkZoomRange: true,
         })

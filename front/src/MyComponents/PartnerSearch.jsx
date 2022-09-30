@@ -29,11 +29,11 @@ const PartnerSearch = (props) => {
         console.log(data)
         // objectManager.removeAll()
         data.features = data.features.map((element, id) => {
-            element.id = id
+            element.id = id * 2 + 1
             element.geometry.coordinates.reverse()
             return element
         })
-        setCurrentFeatures(data)
+        setCurrentFeatures(data.features)
         // objectManager.add(data);
         map.setBounds(objectManager.getBounds(), {
             checkZoomRange: true,
