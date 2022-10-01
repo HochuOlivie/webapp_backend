@@ -30,7 +30,7 @@ class Registration:
         # self.dp.register_callback_query_handler(self._contact_handler, text=cbc.phone, state="*")
 
     async def _start_handler(self, message: types.Message):
-        if await User.objects.filter(tg_id=message.from_user.id).exists():
+        if User.objects.filter(tg_id=message.from_user.id).exists():
             await self.bot.send_message(message.from_user.id, "Сделать заказ или доставить",
                                         reply_markup=InlineKeyboardMarkup()
                                         .add(
