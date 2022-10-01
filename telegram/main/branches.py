@@ -80,4 +80,4 @@ class Main:
             await sync_to_async(PartnerReview.objects.create)(user=user, points=points)
         elif type == 'customer':
             await sync_to_async(CustomerReview.objects.create)(user=user, points=points)
-        await callback.message.edit_text(f'Отзыв пользователю @{user.tg_username}\n\n{"⭐" * points}️')
+        await callback.message.edit_text(f'Отзыв пользователю @{user.tg_username}\n\n{"⭐" * int(points)}️')
