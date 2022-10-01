@@ -9,23 +9,13 @@ class User(models.Model):
     phone = models.TextField()
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    reviews_count = models.IntegerField(default=0)
-    reviews_score = models.FloatField(default=None, blank=True, null=True)
+class PartnerReview(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    points = models.PositiveSmallIntegerField()
 
 
-class Courier(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-
-
-class Customer(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-
-
-class Review(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    is_for = models.CharField(max_length=2, choices=[('co', 'courier'), ('cu', 'customer')])
+class CustomerReview(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     points = models.PositiveSmallIntegerField()
 
 

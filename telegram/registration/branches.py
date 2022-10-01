@@ -1,13 +1,15 @@
 from aiogram import types
 from aiogram import Bot, Dispatcher
-from aiogram.types import InlineKeyboardMarkup, WebAppInfo
+from aiogram.types import InlineKeyboardMarkup, WebAppInfo, ReplyKeyboardMarkup, KeyboardButton
+from asgiref.sync import sync_to_async
 
-from db.models import User
+from db.models import User, PartnerReview, CustomerReview
 from initialize import url
 from . import keyboards
 from . import callback_consts as cbc
 from aiogram.dispatcher import FSMContext
 from .state import States
+from django.db.models import Sum
 
 
 class Registration:
@@ -18,11 +20,13 @@ class Registration:
     def register_commands(self):
         ...
         self.dp.register_message_handler(self._start_handler, commands=["start"], state="*")
+        self.dp.register_message_handler(self._profile_handler, text="🗺 Профиль", state="*")
 
     def register_handlers(self):
         ...
         self.dp.register_message_handler(self._contact_handler, content_types=['contact'], state=States.phone)
         self.dp.register_message_handler(self._name_handler, state=States.name)
+
         # self.dp.register_callback_query_handler(self._contact_handler, text=cbc.phone, state="*")
 
     async def _start_handler(self, message: types.Message):
@@ -38,7 +42,7 @@ class Registration:
             return
         msg = '''Привет 👋
 Это бот для заказа продуктов из любых магазинов, где каждый может выступать как в роли курьера, так и в роли заказчика.
-Для продолжения необходимо пройти короткую регистрацию. Нажми кнопку, чтобы поделиться номером телефона'''
+Для продолжения необходимо пройти короткую регистрацию. Нажмите кнопку, чтобы поделиться номером телефона'''
         phone_keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
         phone_button = types.KeyboardButton(text="Отправить номер телефона", request_contact=True)
         phone_keyboard.add(phone_button)
@@ -47,14 +51,15 @@ class Registration:
         await States.phone.set()
 
     async def _contact_handler(self, message: types.Message, state: FSMContext):
-        msg = 'Отлично! Теперь напиши, как к тебе могут обращаться другие пользователи'
+        msg = 'Теперь напишите, как к вам могут обращаться другие пользователи'
         phone = message.contact.phone_number
         await state.update_data(phone=phone)
         await self.bot.send_message(message.from_user.id, msg)
         await States.name.set()
 
     async def _name_handler(self, message: types.Message, state: FSMContext):
-        msg = 'Теперь ты можешь открыть карту, нажав на кнопку снизу'
+        msg = 'Теперь вы можете кликнуть на свой <b>Профиль</b>, ' \
+              'открыть карту и сделать заказ или предложение на доставку из любого места в своем городе'
         name = message.text
         await state.update_data(name=name)
         User.objects.create(
@@ -64,11 +69,29 @@ class Registration:
             phone=await state.get_data('phone'),
         )
         await self.bot.send_message(message.from_user.id, msg,
-                               reply_markup=InlineKeyboardMarkup()
-                               .add(
-                                   InlineKeyboardMarkup(text="Открыть карту",
-                                                        web_app=WebAppInfo(url=url)
-                                                        )
-                                   )
-                               )
+                                    reply_markup=ReplyKeyboardMarkup().add(
+                                        KeyboardButton("🗺 Профиль")
+                                    )
+                                    )
+
+    async def _profile_handler(self, message: types.Message, state: FSMContext):
+        user = await User.objects.filter(tg_id=message.from_user.id).afirst()
+        msg = f"Ваше имя: {user.name}\n\n"
+        msg += "⭐️ Отзывы (нажмите на Профиль, чтобы обновить):\n"
+        pr = PartnerReview.objects.filter(user=user)
+        cr = CustomerReview.objects.filter(user=user)
+        if pr:
+            msg += f"Партнер: {pr.agregate(Sum('points')) / pr.count():.2f}/5\n"
+        if cr:
+            msg += f"Курьер: {cr.agregate(Sum('points')) / cr.count():.2f}/5\n"
+        if not cr and not pr:
+            msg += "Отзывов пока нет 😔"
+        await self.bot.send_message(message.from_user.id, msg,
+                                    reply_markup=InlineKeyboardMarkup()
+                                    .add(
+                                        InlineKeyboardMarkup(text="Открыть карту",
+                                                             web_app=WebAppInfo(url=url)
+                                                             )
+                                        )
+                                    )
         await state.finish()
