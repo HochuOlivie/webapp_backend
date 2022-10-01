@@ -29,8 +29,6 @@ class Main:
         self.dp.register_callback_query_handler(self._rate_finish, text_startswith='rate_submit', state="*")
         self.dp.register_callback_query_handler(self._rate, text_startswith='rate', state="*")
 
-
-
     async def _delete_order(self, callback: types.CallbackQuery):
         _, order_id = callback.data.split(':')
         await sync_to_async((await Order.objects.aget(id=order_id)).delete)()

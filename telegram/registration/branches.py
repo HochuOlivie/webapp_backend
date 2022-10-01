@@ -71,13 +71,14 @@ class Registration:
         await self.bot.send_message(message.from_user.id, msg,
                                     reply_markup=ReplyKeyboardMarkup().add(
                                         KeyboardButton("🗺 Профиль")
-                                    )
+                                    ),
+                                    parse_mode='HTML'
                                     )
 
     async def _profile_handler(self, message: types.Message, state: FSMContext):
         user = await User.objects.filter(tg_id=message.from_user.id).afirst()
         msg = f"Ваше имя: {user.name}\n\n"
-        msg += "⭐️ Отзывы (нажмите на Профиль, чтобы обновить):\n"
+        msg += "⭐️ Отзывы\n"
         pr = PartnerReview.objects.filter(user=user)
         cr = CustomerReview.objects.filter(user=user)
         if pr:
@@ -85,13 +86,15 @@ class Registration:
         if cr:
             msg += f"Курьер: {cr.agregate(Sum('points')) / cr.count():.2f}/5\n"
         if not cr and not pr:
-            msg += "Отзывов пока нет 😔"
+            msg += "Отзывов пока нет 😔\n"
+        msg += '\n*Статистика обновится после повторного нажатия на <b>Профиль</b>'
         await self.bot.send_message(message.from_user.id, msg,
                                     reply_markup=InlineKeyboardMarkup()
                                     .add(
                                         InlineKeyboardMarkup(text="Открыть карту",
                                                              web_app=WebAppInfo(url=url)
                                                              )
-                                        )
+                                        ),
+                                    parse_mode='HTML'
                                     )
         await state.finish()
