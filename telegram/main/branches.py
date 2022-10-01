@@ -41,7 +41,11 @@ class Main:
 
     async def _accept_order(self, callback: types.CallbackQuery):
         _, order_id = callback.data.split(':')
-        order = await Order.objects.aget(id=order_id)
+        try:
+            order = await Order.objects.aget(id=order_id)
+        except:
+            await callback.message.edit_text("Заказ уже неактуален")
+            return
         await callback.message.edit_text(f'Контакт: @{order.user.tg_username}', reply_markup=InlineKeyboardMarkup().add(
             InlineKeyboardButton("⭐️ Оценить заказчика", callback_data=f'rate:customer:{order.user.tg_id}'),
         ))
@@ -52,7 +56,11 @@ class Main:
 
     async def _decline_order(self, callback: types.CallbackQuery):
         _, order_id = callback.data.split(':')
-        order = await Order.objects.aget(id=order_id)
+        try:
+            order = await Order.objects.aget(id=order_id)
+        except:
+            await callback.message.edit_text("Заказ уже неактуален")
+            return
         await callback.message.edit_text(f'Вы отказались от заказа')
 
     async def _rate(self, callback: types.CallbackQuery):
