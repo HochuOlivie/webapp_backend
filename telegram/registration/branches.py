@@ -30,7 +30,7 @@ class Registration:
         # self.dp.register_callback_query_handler(self._contact_handler, text=cbc.phone, state="*")
 
     async def _start_handler(self, message: types.Message):
-        if User.objects.filter(tg_id=message.from_user.id).exists():
+        if await User.objects.filter(tg_id=message.from_user.id).exists():
             await self.bot.send_message(message.from_user.id, "Сделать заказ или доставить",
                                         reply_markup=InlineKeyboardMarkup()
                                         .add(
@@ -84,7 +84,7 @@ class Registration:
         if pr:
             msg += f"Партнер: {pr.aggregate(Avg('points'))['points__avg']:.2f}\n"
         if cr:
-            msg += f"Курьер: {cr.aggregate(Avg('points'))['points__avg']:.2f}\n"
+            msg += f"Заказчик: {cr.aggregate(Avg('points'))['points__avg']:.2f}\n"
         if not cr and not pr:
             msg += "Отзывов пока нет 😔\n"
         msg += '\n*Статистика обновится после повторного нажатия на <b>Профиль</b>'
