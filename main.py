@@ -52,12 +52,14 @@ async def get_init_data(auth: str = Header()):
 
 
 async def delete_order_on_timeout(message: types.Message, order):
+    Bot.set_current(bot)
     await asyncio.sleep(20)
     await message.edit_text("Предложение было автоматически удалено по истечению срока действия")
     await sync_to_async(order.delete)()
 
 
 async def delete_offer_on_timeout(message: types.Message, offer):
+    Bot.set_current(bot)
     await asyncio.sleep(20)
     await message.edit_text("Заказ был автоматически удален по истечению срока действия")
     await sync_to_async(offer.delete)()
