@@ -53,15 +53,16 @@ async def get_init_data(auth: str = Header()):
 
 async def delete_order_on_timeout(message: types.Message, order):
     Bot.set_current(bot)
-    await asyncio.sleep(20)
-    await message.edit_text("Предложение было автоматически удалено по истечению срока действия")
+    await asyncio.sleep(60 * 60)
+    await message.edit_text("Заказ был автоматически удален по истечению срока давности")
     await sync_to_async(order.delete)()
 
 
 async def delete_offer_on_timeout(message: types.Message, offer):
     Bot.set_current(bot)
-    await asyncio.sleep(20)
-    await message.edit_text("Заказ был автоматически удален по истечению срока действия")
+    await asyncio.sleep(60 * 60)
+    await message.edit_text("Предложение было автоматически удалено по истечению срока давности")
+
     await sync_to_async(offer.delete)()
 
 
@@ -78,8 +79,9 @@ async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     m = await bot.send_message(user.tg_id,
                            f'📦 Ждём, пока кто-нибудь из партнеров примет заказ\n\n'
                            f'📍 Место <b>{name}</b>\n'
-                           f'🏢 Адрес <b>{street}</b>\n\n'
-                           f'Партнер, который примет заказ, появится в текущем чате',
+                           f'🏢 Адрес <b>{street}</b>\n'
+                           f'Партнер, который примет заказ, появится в текущем чате\n\n'
+                           f'Заказ будет автоматически удалён через 1 час',
                            reply_markup=InlineKeyboardMarkup().add(
                                InlineKeyboardButton("❌ Отменить заказ", callback_data=f'order_delete:{order.id}')
                            ),
@@ -115,8 +117,9 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
     m = await bot.send_message(web_init_data['user']['id'],
                            '🚴 Теперь вы в роли партнера доставляете заказчикам продукты\n\n'
                            f'📍 Место <b>{name}</b>\n'
-                           f'🏢 Адрес <b>{street}</b>.\n\n'
-                           f'Заказчики будут высвечиваться в текущем чате',
+                           f'🏢 Адрес <b>{street}</b>.\n'
+                           f'Заказчики будут высвечиваться в текущем чате\n\n'
+                           f'Предложение будет автоматически удалено через 1 час',
                            reply_markup=InlineKeyboardMarkup().add(
                                InlineKeyboardButton("❌ Больше не принимать заказы", callback_data=f'offer_delete:{offer.id}')
                            ),
