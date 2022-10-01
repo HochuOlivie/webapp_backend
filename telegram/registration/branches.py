@@ -69,10 +69,10 @@ class Registration:
             phone=await state.get_data('phone'),
         )
         await self.bot.send_message(message.from_user.id, msg,
-                                    reply_markup=ReplyKeyboardMarkup().add(
+                                    reply_markup=ReplyKeyboardMarkup(resize_keyboard=True).add(
                                         KeyboardButton("🗺 Профиль")
                                     ),
-                                    parse_mode='HTML'
+                                    parse_mode='HTML',
                                     )
 
     async def _profile_handler(self, message: types.Message, state: FSMContext):
