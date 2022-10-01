@@ -77,7 +77,7 @@ class Registration:
 
     async def _profile_handler(self, message: types.Message, state: FSMContext):
         user = await User.objects.filter(tg_id=message.from_user.id).afirst()
-        msg = f"Ваше имя: {user.name}\n\n"
+        msg = f"📌 Ваше имя: {user.name}\n\n"
         msg += "⭐️ Отзывы\n"
         pr = PartnerReview.objects.filter(user=user)
         cr = CustomerReview.objects.filter(user=user)

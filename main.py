@@ -51,6 +51,18 @@ async def get_init_data(auth: str = Header()):
     return data
 
 
+async def delete_order_on_timeout(message: types.Message, order):
+    await asyncio.sleep(20)
+    await message.edit_text("Предложение было автоматически удалено по истечению срока действия")
+    await sync_to_async(order.delete)()
+
+
+async def delete_offer_on_timeout(message: types.Message, offer):
+    await asyncio.sleep(20)
+    await message.edit_text("Заказ был автоматически удален по истечению срока действия")
+    await sync_to_async(offer.delete)()
+
+
 @app.post("/order")
 async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     data = await request.json()
@@ -61,7 +73,7 @@ async def make_order(request: Request, web_init_data=Depends(get_init_data)):
         order = await sync_to_async(Order.objects.create)(feature_from=data, user=user)
     street = data['properties']['description']
     name = data['properties']['name']
-    await bot.send_message(user.tg_id,
+    m = await bot.send_message(user.tg_id,
                            f'📦 Ждём, пока кто-нибудь из партнеров примет заказ\n\n'
                            f'📍 Место <b>{name}</b>\n'
                            f'🏢 Адрес <b>{street}</b>\n\n'
@@ -70,10 +82,11 @@ async def make_order(request: Request, web_init_data=Depends(get_init_data)):
                                InlineKeyboardButton("❌ Отменить заказ", callback_data=f'order_delete:{order.id}')
                            ),
                            parse_mode='HTML')
+    asyncio.create_task(delete_order_on_timeout(m, order))
 
     offers = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     async for offer in offers:
-        await bot.send_message(offer.user.tg_id,
+        m = await bot.send_message(offer.user.tg_id,
                                f'Поступил заказ',
                                reply_markup=InlineKeyboardMarkup(row_width=2).add(
                                    InlineKeyboardButton("✅ Принять", callback_data=f'order_accept:{order.id}'),
@@ -97,7 +110,7 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
         raise HTTPException(status_code=400, detail="Not authorized")
     else:
         offer = await sync_to_async(Offer.objects.create)(feature_from=data, user=user)
-    await bot.send_message(web_init_data['user']['id'],
+    m = await bot.send_message(web_init_data['user']['id'],
                            '🚴 Теперь вы в роли партнера доставляете заказчикам продукты\n\n'
                            f'📍 Место <b>{name}</b>\n'
                            f'🏢 Адрес <b>{street}</b>.\n\n'
@@ -106,6 +119,7 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
                                InlineKeyboardButton("❌ Больше не принимать заказы", callback_data=f'offer_delete:{offer.id}')
                            ),
                            parse_mode='HTML')
+    asyncio.create_task(delete_offer_on_timeout(m, offer))
 
     orders = Order.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
     async for order in orders:
