@@ -9,7 +9,7 @@ from . import keyboards
 from . import callback_consts as cbc
 from aiogram.dispatcher import FSMContext
 from .state import States
-from django.db.models import Sum
+from django.db.models import Avg
 
 
 class Registration:
@@ -82,9 +82,9 @@ class Registration:
         pr = PartnerReview.objects.filter(user=user)
         cr = CustomerReview.objects.filter(user=user)
         if pr:
-            msg += f"Партнер: {pr.agregate(Sum('points')) / pr.count():.2f}/5\n"
+            msg += f"Партнер: {pr.aggregate(Avg('points')):.2f}/5\n"
         if cr:
-            msg += f"Курьер: {cr.agregate(Sum('points')) / cr.count():.2f}/5\n"
+            msg += f"Курьер: {cr.aggregate(Avg('points')):.2f}/5\n"
         if not cr and not pr:
             msg += "Отзывов пока нет 😔\n"
         msg += '\n*Статистика обновится после повторного нажатия на <b>Профиль</b>'
