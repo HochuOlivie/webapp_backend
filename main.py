@@ -100,6 +100,27 @@ async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     return {"ok": True}
 
 
+@app.post("/order")
+async def make_order_new(request: Request, web_init_data=Depends(get_init_data)):
+    data = await request.json()
+    street = data['properties']['description']
+    name = data['properties']['name']
+
+    user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
+    if user is None:
+        raise HTTPException(status_code=400, detail="Not authorized")
+    m = await bot.send_message(user.tg_id, f'📦 Ваш заказ'
+                                           f'📍 Место <b>{name}</b>\n'
+                                           f'🏢 Адрес <b>{street}</b>\n\n'
+                                           f'Выберите, куда будет осуществлена доставка',
+                                            reply_markup=InlineKeyboardMarkup().add(
+                                                InlineKeyboardButton("➕ Добавить адрес",
+                                                                     switch_inline_query_current_chat='@kit_delivery_bot ',
+                                                                     callback_data=f'new_address')
+                                            )
+                              )
+
+
 @app.post("/offer")
 async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
     data = await request.json()

@@ -28,6 +28,7 @@ class Main:
         self.dp.register_callback_query_handler(self._decline_order, text_startswith='order_decline', state="*")
         self.dp.register_callback_query_handler(self._rate_finish, text_startswith='rate_submit', state="*")
         self.dp.register_callback_query_handler(self._rate, text_startswith='rate', state="*")
+        self.dp.register_inline_handler(self._choose_addr, state="*")
 
     async def _delete_order(self, callback: types.CallbackQuery):
         _, order_id = callback.data.split(':')
@@ -89,3 +90,13 @@ class Main:
         elif type == 'customer':
             await sync_to_async(CustomerReview.objects.create)(user=user, points=points)
         await callback.message.edit_text(f'Отзыв пользователю @{user.tg_username}\n\n{"⭐" * int(points)}️')
+
+    async def _choose_addr(self, query: types.InlineQuery):
+        text = query.query
+        return query.answer([types.InlineQueryResultArticle(
+            id=text,
+            title=text,
+            input_message_content=text,
+            )],
+            is_personal=True
+        )

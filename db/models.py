@@ -27,3 +27,8 @@ class Order(models.Model):
 class Offer(models.Model):
     feature_from = models.JSONField()
     user = models.ForeignKey(User, default=None, blank=True, null=True, on_delete=models.CASCADE)
+
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feature = models.JSONField()
