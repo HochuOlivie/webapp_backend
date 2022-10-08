@@ -109,14 +109,15 @@ async def make_order_new(request: Request, web_init_data=Depends(get_init_data))
     user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
     if user is None:
         raise HTTPException(status_code=400, detail="Not authorized")
-    m = await bot.send_message(user.tg_id, f'📦 Ваш заказ'
+    m = await bot.send_message(user.tg_id, f'📦 Ваш заказ\n\n'
                                            f'📍 Место <b>{name}</b>\n'
                                            f'🏢 Адрес <b>{street}</b>\n\n'
                                            f'Выберите, куда будет осуществлена доставка',
                                             reply_markup=InlineKeyboardMarkup().add(
                                                 InlineKeyboardButton("➕ Добавить адрес",
                                                                      switch_inline_query_current_chat='')
-                                            )
+                                            ),
+                                            parse_mode='HTML'
                               )
 
 
