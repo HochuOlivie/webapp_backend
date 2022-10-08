@@ -97,7 +97,10 @@ class Main:
         return await query.answer([types.InlineQueryResultArticle(
             id=text,
             title=text,
-            input_message_content=text,
+            input_message_content=types.InputTextMessageContent(
+                message_text=f"<b>{text}</b>\n и я еще добавил чета",
+            parse_mode="HTML"
+        ),
             )],
             is_personal=True
         )
