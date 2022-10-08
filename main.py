@@ -115,8 +115,7 @@ async def make_order_new(request: Request, web_init_data=Depends(get_init_data))
                                            f'Выберите, куда будет осуществлена доставка',
                                             reply_markup=InlineKeyboardMarkup().add(
                                                 InlineKeyboardButton("➕ Добавить адрес",
-                                                                     switch_inline_query_current_chat='Магнитогорск',
-                                                                     callback_data=f'new_address')
+                                                                     switch_inline_query_current_chat='')
                                             )
                               )
 
