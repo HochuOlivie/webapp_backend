@@ -1,10 +1,8 @@
 import logging
-
 from aiogram import types
 from aiogram import Bot, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, WebAppInfo, InlineKeyboardButton
 from asgiref.sync import sync_to_async
-
 from db.models import User, Order, Offer, CustomerReview, PartnerReview
 from initialize import url
 from aiogram.dispatcher import FSMContext
@@ -99,7 +97,6 @@ class Main:
     async def _choose_addr(self, query: types.InlineQuery, state: FSMContext):
         state_data = await state.get_data()
         city = state_data['city']
-        logging.debug(city)
         text = query.query
         res = requests.get(f'https://suggest-maps.yandex.ru/suggest-geo?callback=&apikey=4240729e-72a9-4ece-815e-704470532e85&v=5&search_type=tp&part={city},{text}&lang=ru_RU&n=5&origin=jsapi2Geocoder&bbox=-180%2C-90%2C180%2C90').json()[1]
         suggestions = [
@@ -123,8 +120,8 @@ class Main:
         m = await self.bot.send_message(user.tg_id,
                                    f'📦 Ждём, пока кто-нибудь из партнеров примет заказ\n\n'
                                    f'📍 Место <b>{name}</b>\n'
-                                   f'🏢 Адрес магазина <b>{street}</b>\n\n'
-                                   f'🏠 Адрес доставки <b>{message.text}</b>'
+                                   f'🏢 Адрес магазина <b>{street}</b>\n'
+                                   f'🏠 Адрес доставки <b>{message.text}</b>\n\n'
                                    f'Партнер, который примет заказ, появится в текущем чате\n\n'
                                    f'Заказ будет автоматически удалён через 1 час',
                                    reply_markup=InlineKeyboardMarkup().add(

@@ -42,7 +42,6 @@ app.add_middleware(
 
 
 async def get_init_data(auth: str = Header()):
-    logging.debug(auth)
     if auth is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     try:
@@ -92,8 +91,6 @@ async def make_offer(request: Request, web_init_data=Depends(get_init_data)):
     street = data['properties']['description']
     name = data['properties']['name']
     user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
-    logging.debug(user)
-    logging.debug(web_init_data['user']['id'])
     if user is None:
         raise HTTPException(status_code=400, detail="Not authorized")
     else:
