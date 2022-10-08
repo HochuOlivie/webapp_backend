@@ -94,7 +94,7 @@ class Main:
     async def _choose_addr(self, query: types.InlineQuery):
         text = query.query
         logging.debug(text)
-        return query.answer([types.InlineQueryResultArticle(
+        return await query.answer([types.InlineQueryResultArticle(
             id=text,
             title=text,
             input_message_content=text,
