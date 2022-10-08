@@ -99,6 +99,7 @@ class Main:
     async def _choose_addr(self, query: types.InlineQuery, state: FSMContext):
         state_data = await state.get_data()
         city = state_data['city']
+        logging.debug(city)
         text = query.query
         res = requests.get(f'https://suggest-maps.yandex.ru/suggest-geo?callback=&apikey=4240729e-72a9-4ece-815e-704470532e85&v=5&search_type=tp&part={city},{text}&lang=ru_RU&n=5&origin=jsapi2Geocoder&bbox=-180%2C-90%2C180%2C90').json()[1]
         suggestions = [
