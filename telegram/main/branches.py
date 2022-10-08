@@ -95,7 +95,7 @@ class Main:
         text = query.query
         logging.debug(text)
         return await query.answer([types.InlineQueryResultArticle(
-            id=text,
+            id=query.id,
             title=text,
             input_message_content=types.InputTextMessageContent(
                 message_text=f"<b>{text}</b>\n и я еще добавил чета",
