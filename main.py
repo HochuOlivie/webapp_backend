@@ -66,7 +66,7 @@ async def delete_offer_on_timeout(message: types.Message, offer):
     await sync_to_async(offer.delete)()
 
 
-@app.post("/order")
+# @app.post("/order")
 async def make_order(request: Request, web_init_data=Depends(get_init_data)):
     data = await request.json()
     user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
@@ -115,7 +115,7 @@ async def make_order_new(request: Request, web_init_data=Depends(get_init_data))
                                            f'Выберите, куда будет осуществлена доставка',
                                             reply_markup=InlineKeyboardMarkup().add(
                                                 InlineKeyboardButton("➕ Добавить адрес",
-                                                                     switch_inline_query_current_chat='@kit_delivery_bot ',
+                                                                     switch_inline_query_current_chat='Магнитогорск',
                                                                      callback_data=f'new_address')
                                             )
                               )

@@ -8,6 +8,7 @@ from asgiref.sync import sync_to_async
 from db.models import User, Order, Offer, CustomerReview, PartnerReview
 from initialize import url
 from aiogram.dispatcher import FSMContext
+import requests
 
 
 class Main:
@@ -93,14 +94,14 @@ class Main:
 
     async def _choose_addr(self, query: types.InlineQuery):
         text = query.query
-        logging.debug(text)
-        return await query.answer([types.InlineQueryResultArticle(
-            id=query.id,
-            title=text,
-            input_message_content=types.InputTextMessageContent(
-                message_text=f"<b>{text}</b>\n и я еще добавил чета",
-            parse_mode="HTML"
-        ),
-            )],
-            is_personal=True
-        )
+        res = requests.get(f'https://suggest-maps.yandex.ru/suggest-geo?callback=&apikey=4240729e-72a9-4ece-815e-704470532e85&v=5&search_type=tp&part=Россия,{text}&lang=ru_RU&n=5&origin=jsapi2Geocoder&bbox=-180%2C-90%2C180%2C90').json()
+        suggestions = [
+            types.InlineQueryResultArticle(id=query.id,
+                                           title=i[1],
+                                           input_message_content=types.InputTextMessageContent(
+                                               message_text=f"<b>{text}</b>",
+                                               parse_mode="HTML"
+                                           ))
+            for i in res[:5]
+        ]
+        return await query.answer(suggestions, is_personal=True)

@@ -108,7 +108,7 @@ const PartnerMap = (props) => {
                 }
             }
 
-            fetchJsonp(`https://geocode-maps.yandex.ru/1.x/?format=json&apikey=4240729e-72a9-4ece-815e-704470532e85&geocode=${e.get('coords')[1]},${e.get('coords')[0]}&results=1`, {
+            fetchJsonp(`https://geocode-maps.yandex.ru/1.x/?format=json&apikey=4240729e-72a9-4ece-815e-704470532e85&geocode=${e.get('coords')[1]},${e.get('coords')[0]}&results=1&kind=house`, {
                 jsonpCallback: "callback"
             })
                 .then((res) => res.json())
