@@ -46,7 +46,10 @@ const CustomerMap = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const mainButtonCallback = useCallback(() => {
         axios.post('https://api.1032649-cu51513.tmweb.ru/order',
-            objectManager.objects.getById(featureId.current)
+            {
+                'feature': objectManager.objects.getById(featureId.current),
+                'city': city.current
+            }
             ).then((res) => tg.current.close()).catch((e) => tg.current.close())
     }, [objectManager])
 

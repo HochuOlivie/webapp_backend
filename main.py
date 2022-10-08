@@ -17,6 +17,7 @@ from telegram.bot import DeliveryBot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from db.models import Offer, User, Order
 from asgiref.sync import sync_to_async
+from telegram.state import States
 
 
 logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
@@ -51,13 +52,6 @@ async def get_init_data(auth: str = Header()):
     return data
 
 
-async def delete_order_on_timeout(message: types.Message, order):
-    Bot.set_current(bot)
-    await asyncio.sleep(60 * 60)
-    await message.edit_text("Заказ был автоматически удален по истечению срока давности")
-    await sync_to_async(order.delete)()
-
-
 async def delete_offer_on_timeout(message: types.Message, offer):
     Bot.set_current(bot)
     await asyncio.sleep(60 * 60)
@@ -66,52 +60,21 @@ async def delete_offer_on_timeout(message: types.Message, offer):
     await sync_to_async(offer.delete)()
 
 
-# @app.post("/order")
-async def make_order(request: Request, web_init_data=Depends(get_init_data)):
-    data = await request.json()
-    user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
-    if user is None:
-        raise HTTPException(status_code=400, detail="Not authorized")
-    else:
-        order = await sync_to_async(Order.objects.create)(feature_from=data, user=user)
-    street = data['properties']['description']
-    name = data['properties']['name']
-    m = await bot.send_message(user.tg_id,
-                           f'📦 Ждём, пока кто-нибудь из партнеров примет заказ\n\n'
-                           f'📍 Место <b>{name}</b>\n'
-                           f'🏢 Адрес <b>{street}</b>\n\n'
-                           f'Партнер, который примет заказ, появится в текущем чате\n\n'
-                           f'Заказ будет автоматически удалён через 1 час',
-                           reply_markup=InlineKeyboardMarkup().add(
-                               InlineKeyboardButton("❌ Отменить заказ", callback_data=f'order_delete:{order.id}')
-                           ),
-                           parse_mode='HTML')
-    asyncio.create_task(delete_order_on_timeout(m, order))
-
-    offers = Offer.objects.filter(feature_from__geometry__coordinates=data['geometry']['coordinates'])
-    async for offer in offers:
-        m = await bot.send_message(offer.user.tg_id,
-                               f'Поступил заказ',
-                               reply_markup=InlineKeyboardMarkup(row_width=2).add(
-                                   InlineKeyboardButton("✅ Принять", callback_data=f'order_accept:{order.id}'),
-                                   InlineKeyboardButton("❌ Отклонить", callback_data=f'order_decline:{order.id}')
-                               ),
-                               parse_mode='HTML')
-    return {"ok": True}
-
-
 @app.post("/order")
 async def make_order_new(request: Request, web_init_data=Depends(get_init_data)):
     data = await request.json()
-    street = data['properties']['description']
+    city = data['city']
+    data = data['feature']
     name = data['properties']['name']
 
     user = await User.objects.filter(tg_id=web_init_data['user']['id']).afirst()
     if user is None:
         raise HTTPException(status_code=400, detail="Not authorized")
-    m = await bot.send_message(user.tg_id, f'📦 Ваш заказ\n\n'
-                                           f'📍 Место <b>{name}</b>\n'
-                                           f'🏢 Адрес <b>{street}</b>\n\n'
+
+    await storage.set_state(user=user.tg_id, state=States.choose_address)
+    await storage.set_data(user=user.tg_id, data={'city': city, 'data': data})
+
+    m = await bot.send_message(user.tg_id, f'📦 Заказ из <b>{name}</b>\n\n'
                                            f'Выберите, куда будет осуществлена доставка',
                                             reply_markup=InlineKeyboardMarkup().add(
                                                 InlineKeyboardButton("➕ Добавить адрес",
