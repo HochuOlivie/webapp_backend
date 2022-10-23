@@ -59,7 +59,7 @@ const Choose = (props) => {
                     color="warning"
                     // size='large'
                 >
-                    <span style={{fontSize: 23, marginRight: 18}} role="img">🚴</span>Партнер
+                    <span style={{fontSize: 23, marginRight: 18}} role="img">🚴</span>Привезу
                 </MKButton>
             </Link>
             <Link to={'/customer'}>
@@ -78,7 +78,7 @@ const Choose = (props) => {
                     >
                         📦
                     </span>
-                    Заказчик
+                    Закажу
                 </MKButton>
             </Link>
         </Box>

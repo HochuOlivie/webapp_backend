@@ -73,7 +73,7 @@ async def make_order_new(request: Request, web_init_data=Depends(get_init_data))
     await storage.set_state(user=user.tg_id, state=States.choose_address)
     await storage.set_data(user=user.tg_id, data={'city': city, 'data': data})
 
-    m = await bot.send_message(user.tg_id, f'📦 Заказ из <b>{name}</b>\n\n'
+    await bot.send_message(user.tg_id, f'📦 Заказ из <b>{name}</b>\n\n'
                                            f'Выберите, куда будет осуществлена доставка',
                                             reply_markup=InlineKeyboardMarkup().add(
                                                 InlineKeyboardButton("➕ Добавить адрес",

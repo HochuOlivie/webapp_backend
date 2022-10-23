@@ -22,8 +22,6 @@ class Main:
 
     def register_handlers(self):
         ...
-        # self.dp.register_message_handler(self._contact_handler, content_types=['contact'], state=States.phone)
-        # self.dp.register_message_handler(self._name_handler, state=States.name)
         self.dp.register_callback_query_handler(self._delete_order, text_startswith='order_delete', state="*")
         self.dp.register_callback_query_handler(self._delete_offer, text_startswith='offer_delete', state="*")
         self.dp.register_callback_query_handler(self._accept_order, text_startswith='order_accept', state="*")
