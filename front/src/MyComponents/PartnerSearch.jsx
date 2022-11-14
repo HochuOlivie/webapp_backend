@@ -30,8 +30,6 @@ const PartnerSearch = (props) => {
             console.log("Sending...")
             performSearch(text)
 
-            // e.target.disabled = false;
-            // e.target.style.background = "#ffffff";
         }
     }
 
