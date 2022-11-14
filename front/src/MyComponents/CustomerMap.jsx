@@ -76,22 +76,19 @@ const CustomerMap = (props) => {
         if (objectManager === null) {
             return
         }
-        // axios.get('https://api.1032649-cu51513.tmweb.ru/offers')
-        //     .then((res) => {
-        //         const data = res.data
-        //         data.features = data.features.map((element, id) => {
-        //             element.id = -id - 1
-        //             element.options.preset = "islands#nightDotIcon"
-        //             return element
-        //         })
-        //         data.features = data.features.filter(function(item) {
-        //             return item.properties.description.includes(city.current)
-        //         });
-        //         const features = {'type': 'FeatureCollection', 'features': data.features}
-        //         objectManager.objects.add(features)
-        //
-        //     })
-        //     .catch((e) => tg.current.close())
+        axios.get('https://api.1032649-cu51513.tmweb.ru/offers')
+            .then((res) => {
+                const data = res.data
+                data.features = data.features.map((element, id) => {
+                    element.id = -id - 1
+                    element.options.preset = "islands#nightDotIcon"
+                    return element
+                })
+                const features = {'type': 'FeatureCollection', 'features': data.features}
+                objectManager.objects.add(features)
+
+            })
+            .catch((e) => tg.current.close())
 
     }, [objectManager])
 
@@ -225,22 +222,6 @@ const CustomerMap = (props) => {
                             const addrParts = res.response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.Address.Components
                             city.current = addrParts[addrParts.findIndex((x) => x.kind === 'locality')]['name']
                             console.log(city.current)
-                            axios.get('https://api.1032649-cu51513.tmweb.ru/offers')
-                                .then((res) => {
-                                    const data = res.data
-                                    data.features = data.features.map((element, id) => {
-                                        element.id = -id - 1
-                                        element.options.preset = "islands#nightDotIcon"
-                                        return element
-                                    })
-                                    data.features = data.features.filter(function(item) {
-                                        return item.properties.description.includes(city.current)
-                                    });
-                                    const features = {'type': 'FeatureCollection', 'features': data.features}
-                                    objectManager.objects.add(features)
-
-                                })
-                                .catch((e) => {tg.current.close()})
                         })
                     // Добавление местоположения на карту.
                     map.geoObjects.add(result.geoObjects)
