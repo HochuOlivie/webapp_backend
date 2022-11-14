@@ -35,7 +35,9 @@ const PartnerSearch = (props) => {
         })
         console.log(1234)
         data.features = data.features.filter(function(item) {
-            return item.properties.description.includes(city.current)
+            let address = item.properties.description.split(', ');
+            let micro_city = address.reverse()[1];
+            return micro_city.includes(city.current);
         });
         console.log(1234567)
         setCurrentFeatures(data.features)

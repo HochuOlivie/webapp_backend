@@ -32,7 +32,9 @@ const Search = (props) => {
             return element
         })
         data.features = data.features.filter(function(item) {
-            return item.properties.description.includes(city.current)
+            let address = item.properties.description.split(', ');
+            let micro_city = address.reverse()[1];
+            return micro_city.includes(city.current);
         });
 
         setCurrentFeatures(data.features)
