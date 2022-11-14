@@ -5,7 +5,6 @@ from django.db import models
 class User(models.Model):
     tg_id = models.IntegerField()
     tg_username = models.TextField()
-    name = models.TextField()
     phone = models.TextField()
 
 
