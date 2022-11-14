@@ -45,25 +45,25 @@ const PartnerMap = (props) => {
     let [drawerHours, setDrawerHours] = useState('')
 
     useEffect(() => {
-        if (objectManager === null || city.current === null) {
+        if (objectManager === null) {
             return
         }
-        // axios.get('https://api.1032649-cu51513.tmweb.ru/orders')
-        //     .then((res) => {
-        //         const data = res.data
-        //         data.features = data.features.map((element, id) => {
-        //             element.id = -id - 1
-        //             element.options.preset = "islands#nightDotIcon"
-        //             return element
-        //         })
-        //         data.features = data.features.filter(function(item) {
-        //             return item.properties.description.includes(city.current)
-        //         });
-        //         const features = {'type': 'FeatureCollection', 'features': data.features}
-        //         objectManager.objects.add(features)
-        //
-        //     })
-        //     .catch((e) => tg.current.close())
+        axios.get('https://api.1032649-cu51513.tmweb.ru/orders')
+            .then((res) => {
+                const data = res.data
+                data.features = data.features.map((element, id) => {
+                    element.id = -id - 1
+                    element.options.preset = "islands#nightDotIcon"
+                    return element
+                })
+                data.features = data.features.filter(function(item) {
+                    return item.properties.description.includes(city.current)
+                });
+                const features = {'type': 'FeatureCollection', 'features': data.features}
+                objectManager.objects.add(features)
+
+            })
+            .catch((e) => tg.current.close())
 
     }, [objectManager])
 
@@ -224,22 +224,27 @@ const PartnerMap = (props) => {
                             console.log(res)
                             const addrParts = res.response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.Address.Components
                             city.current = addrParts[addrParts.findIndex((x) => x.kind === 'locality')]['name']
-                            axios.get('https://api.1032649-cu51513.tmweb.ru/orders')
-                                .then((res) => {
-                                    const data = res.data
-                                    data.features = data.features.map((element, id) => {
-                                        element.id = -id - 1
-                                        element.options.preset = "islands#nightDotIcon"
-                                        return element
-                                    })
-                                    data.features = data.features.filter(function(item) {
-                                        return item.properties.description.includes(city.current)
-                                    });
-                                    const features = {'type': 'FeatureCollection', 'features': data.features}
-                                    objectManager.objects.add(features)
+                            console.log(city.current)
 
-                                })
-                                .catch((e) => {tg.current.close()})
+                            // console.log(res)
+                            // const addrParts = res.response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.Address.Components
+                            // city.current = addrParts[addrParts.findIndex((x) => x.kind === 'locality')]['name']
+                            // axios.get('https://api.1032649-cu51513.tmweb.ru/orders')
+                            //     .then((res) => {
+                            //         const data = res.data
+                            //         data.features = data.features.map((element, id) => {
+                            //             element.id = -id - 1
+                            //             element.options.preset = "islands#nightDotIcon"
+                            //             return element
+                            //         })
+                            //         data.features = data.features.filter(function(item) {
+                            //             return item.properties.description.includes(city.current)
+                            //         });
+                            //         const features = {'type': 'FeatureCollection', 'features': data.features}
+                            //         objectManager.objects.add(features)
+                            //
+                            //     })
+                            //     .catch((e) => {tg.current.close()})
                         })
                     // Добавление местоположения на карту.
                     map.geoObjects.add(result.geoObjects)
