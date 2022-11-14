@@ -70,6 +70,10 @@ const PartnerSearch = (props) => {
             .then((data) => placeFeatureCollection(data))
             .catch(function (ex) {
                 console.log('parsing failed', ex)
+                console.log("Disabling!!")
+                let search = document.evaluate('/html/body/div[2]/div/div[2]/div', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                search.style.background = "#ffffff";
+                document.getElementById('search_field').disabled = false;
             })
     }
 
