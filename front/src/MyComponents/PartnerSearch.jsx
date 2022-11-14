@@ -20,8 +20,18 @@ const PartnerSearch = (props) => {
 
     const keyDown = (e) => {
         if (e.keyCode === 13) {
+
             searchInput.current.blur()
+
+            let search = document.evaluate('/html/body/div[2]/div/div[2]/div', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            e.target.disabled = true;
+            search.style.background = "#d6d5a7";
+
+            console.log("Sending...")
             performSearch(text)
+
+            // e.target.disabled = false;
+            // e.target.style.background = "#ffffff";
         }
     }
 
@@ -34,12 +44,18 @@ const PartnerSearch = (props) => {
             return element
         })
         console.log(1234)
-        data.features = data.features.filter(function(item) {
+        data.features = data.features.filter(function (item) {
             let address = item.properties.description.split(', ');
             let micro_city = address.reverse()[1];
             return micro_city.includes(city.current);
         });
         console.log(1234567)
+
+        console.log("Disabling!!")
+        let search = document.evaluate('/html/body/div[2]/div/div[2]/div', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        search.style.background = "#ffffff";
+        document.getElementById('search_field').disabled = false;
+
         setCurrentFeatures(data.features)
         console.log(objectManager.getBounds())
         map.setBounds(objectManager.getBounds(), {
@@ -54,7 +70,7 @@ const PartnerSearch = (props) => {
         })
             .then((res) => res.json())
             .then((data) => placeFeatureCollection(data))
-            .catch(function(ex) {
+            .catch(function (ex) {
                 console.log('parsing failed', ex)
             })
     }
@@ -63,6 +79,7 @@ const PartnerSearch = (props) => {
         <TextField
             size="small"
             ref={searchInput}
+            id={'search_field'}
             sx={{
                 // boxShadow: 3,
                 // borderRadius: '10px 10px 0 0',
